@@ -1,9 +1,9 @@
 import AWS from 'aws-sdk';
 
 AWS.config.update({
-    region: "eu-west-2",
-    endpoint: "localhost:8000",
-});
+    region: "eu-west-1",
+    endpoint: "http://localhost:8000",
+}, true);
 
 const dynamoDb = new AWS.DynamoDB();
 
@@ -16,7 +16,6 @@ dynamoDb.createTable({
     AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'N' },
         { AttributeName: 'title', AttributeType: 'S' },
-        { AttributeName: 'body', AttributeType: 'S' },
     ],
     ProvisionedThroughput: {
         ReadCapacityUnits: 1,
