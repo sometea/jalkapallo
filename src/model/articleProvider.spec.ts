@@ -19,10 +19,13 @@ describe('ArticleProvider', () => {
         expect(result).toEqual([]);
     });
 
-    it('gets an article by id', () => {
-        const article = articleProvider.get('testId');
-        expect(article.getBody()).toEqual('test');
-        expect(article.getTitle()).toEqual('test');
+    it('gets an article by id', async () => {
+        documentClientSpy.get = jasmine.createSpy().and.callFake((params: any, callback: any) => {
+            callback('', { Item: { title: 'title', body: 'body', id: 'id' }});
+        });
+        const article = await articleProvider.get('testId');
+        expect(article.getBody()).toEqual('body');
+        expect(article.getTitle()).toEqual('title');
         expect(article.getId()).toEqual('id');
     });
 
@@ -30,8 +33,8 @@ describe('ArticleProvider', () => {
         expect(true).toBeTruthy();
     });
 
-    it('saves an article to the db', () => {
+    it('saves an article to the db', async () => {
         const article = new Article('test', 'test', 'test');
-        expect(articleProvider.save(article)).toEqual(article);
+        expect(await articleProvider.save(article)).toEqual(article);
     })
 });
