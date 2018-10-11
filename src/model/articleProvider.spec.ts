@@ -7,12 +7,16 @@ describe('ArticleProvider', () => {
     let documentClientSpy: DocumentClient;
 
     beforeEach(() => {
-        documentClientSpy = jasmine.createSpyObj<DocumentClient>(['put', 'get']);
+        documentClientSpy = jasmine.createSpyObj<DocumentClient>(['get', 'query']);
         articleProvider = new ArticleProvider(documentClientSpy);
     });
 
-    it('lists articles', () => {
-        expect(articleProvider.list()).toEqual([]);
+    it('lists articles', async () => {
+        documentClientSpy.query = jasmine.createSpy().and.callFake((params: any, callback: any) => {
+            callback('', { Items: []});
+        });
+        const result = await articleProvider.list();
+        expect(result).toEqual([]);
     });
 
     it('gets an article by id', () => {
