@@ -10,7 +10,7 @@ export class ArticleProvider implements CrudInterface<Article> {
 
     list(): Promise<Article[]> {
         return new Promise((resolve, reject) => {
-            this.db.query({
+            this.db.scan({
                 TableName: this.tableName,
             }, (err, data) => {
                 if (err) {

@@ -7,12 +7,12 @@ describe('ArticleProvider', () => {
     let documentClientSpy: DocumentClient;
 
     beforeEach(() => {
-        documentClientSpy = jasmine.createSpyObj<DocumentClient>('DocumentClient', ['get', 'query', 'delete', 'put']);
+        documentClientSpy = jasmine.createSpyObj<DocumentClient>('DocumentClient', ['get', 'scan', 'delete', 'put']);
         articleProvider = new ArticleProvider(documentClientSpy);
     });
 
     it('lists articles', async () => {
-        documentClientSpy.query = jasmine.createSpy().and.callFake((params: any, callback: any) => {
+        documentClientSpy.scan = jasmine.createSpy().and.callFake((params: any, callback: any) => {
             callback('', { Items: []});
         });
         const result = await articleProvider.list();

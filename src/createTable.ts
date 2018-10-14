@@ -1,22 +1,17 @@
 import AWS from 'aws-sdk';
 import uuidv4 from 'uuid';
+import { getDocumentClient } from './dbConfig';
 
-AWS.config.update({
-    region: "eu-west-1",
-    endpoint: "http://localhost:8000",
-}, true);
-
+const documentClient = getDocumentClient();
 const dynamoDb = new AWS.DynamoDB();
 
 dynamoDb.createTable({
     TableName: 'Articles',
     KeySchema: [
         { AttributeName: 'id', KeyType: 'HASH' },
-        { AttributeName: 'title', KeyType: 'RANGE' },
     ],
     AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'S' },
-        { AttributeName: 'title', AttributeType: 'S' },
     ],
     ProvisionedThroughput: {
         ReadCapacityUnits: 1,
@@ -32,7 +27,6 @@ dynamoDb.createTable({
 });
 
 function saveSampleData() {
-    const documentClient = new AWS.DynamoDB.DocumentClient();
     const items = [
         { title: 'The badgers are back.', body: 'All the badgers have been seen again.' },
         { title: 'Hellow badgers.', body: 'The badgers are really good people.' },
