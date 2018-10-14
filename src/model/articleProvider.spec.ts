@@ -7,7 +7,7 @@ describe('ArticleProvider', () => {
     let documentClientSpy: DocumentClient;
 
     beforeEach(() => {
-        documentClientSpy = jasmine.createSpyObj<DocumentClient>(['get', 'query']);
+        documentClientSpy = jasmine.createSpyObj<DocumentClient>('DocumentClient', ['get', 'query', 'delete']);
         articleProvider = new ArticleProvider(documentClientSpy);
     });
 
@@ -29,8 +29,10 @@ describe('ArticleProvider', () => {
         expect(article.getId()).toEqual('id');
     });
 
-    it('deletes an article by id', () => {
-        expect(true).toBeTruthy();
+    it('deletes an article by id', async () => {
+        documentClientSpy.delete = jasmine.createSpy('delete').and.returnValue({ promise: () => {} });
+        await articleProvider.delete('testId');
+        expect(documentClientSpy.delete).toHaveBeenCalled();
     });
 
     it('saves an article to the db', async () => {

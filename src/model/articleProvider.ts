@@ -41,8 +41,12 @@ export class ArticleProvider implements CrudInterface<Article> {
         });
     }
 
-    delete(id: string): Promise<void> {
-        return new Promise(resolve => resolve());
+    async delete(id: string): Promise<void> {
+        await this.db.delete({
+            TableName: this.tableName,
+            Key: [{ id: id }],
+        }).promise();
+        return;
     }
 
     save(dataObject: Article): Promise<Article> {
