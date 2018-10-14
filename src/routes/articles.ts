@@ -27,4 +27,11 @@ router.post('/', async (req, res) => {
         ''
     ));
     return res.json(newArticle);
-})
+});
+
+router.delete('/:id', async (req, res) => {
+    await articleProvider.delete(req.params.id);
+    return res.json({
+        message: 'Deleted article ' + req.params.id + '.',
+    });
+});
