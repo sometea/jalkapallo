@@ -10,3 +10,8 @@ router.get('/', async (req, res) => {
     const articles = await articleProvider.list();
     return res.json(articles);
 });
+
+router.get('/:id', async (req, res) => {
+    const article = await articleProvider.get(req.params.id);
+    return res.json(article);
+});

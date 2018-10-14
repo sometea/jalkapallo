@@ -30,7 +30,7 @@ export class ArticleProvider implements CrudInterface<Article> {
         return new Promise((resolve, reject) => {
             this.db.get({
                 TableName: this.tableName,
-                Key: [{ id: id }],
+                Key: { 'id': id },
             }, (err, data) => {
                 if (err) {
                     return reject(err);
