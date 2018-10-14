@@ -7,7 +7,7 @@ describe('ArticleProvider', () => {
     let documentClientSpy: DocumentClient;
 
     beforeEach(() => {
-        documentClientSpy = jasmine.createSpyObj<DocumentClient>('DocumentClient', ['get', 'query', 'delete']);
+        documentClientSpy = jasmine.createSpyObj<DocumentClient>('DocumentClient', ['get', 'query', 'delete', 'put']);
         articleProvider = new ArticleProvider(documentClientSpy);
     });
 
@@ -36,7 +36,12 @@ describe('ArticleProvider', () => {
     });
 
     it('saves an article to the db', async () => {
+        documentClientSpy.put = jasmine.createSpy('put').and.returnValue({ promise: () => {} });
         const article = new Article('test', 'test', 'test');
-        expect(await articleProvider.save(article)).toEqual(article);
+        const result = await articleProvider.save(article);
+        expect(result.getBody()).toEqual(article.getBody());
+        expect(result.getTitle()).toEqual(article.getTitle());
+        expect(result.getId()).not.toEqual(article.getId());
+        expect(documentClientSpy.put).toHaveBeenCalled();
     })
 });

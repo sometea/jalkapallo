@@ -1,6 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CrudInterface } from "../crudInterface";
 import { Article } from "./article";
+import uuidv4 from 'uuid';
 
 export class ArticleProvider implements CrudInterface<Article> {
     private tableName = 'Articles';
@@ -49,7 +50,20 @@ export class ArticleProvider implements CrudInterface<Article> {
         return;
     }
 
-    save(dataObject: Article): Promise<Article> {
-        return new Promise(resolve => resolve(dataObject));
+    async save(dataObject: Article): Promise<Article> {
+        const newArticle = new Article(
+            dataObject.getTitle(),
+            dataObject.getBody(),
+            uuidv4()
+        );
+        await this.db.put({
+            TableName: this.tableName,
+            Item: {
+                id: newArticle.getId(),
+                title: newArticle.getTitle(),
+                body: newArticle.getBody(),
+            }
+        }).promise();
+        return newArticle;
     }
 }
