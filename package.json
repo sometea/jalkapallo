@@ -31,17 +31,15 @@
     "@types/express": "^4.16.0",
     "@types/jasmine": "^2.8.9",
     "@types/node": "^10.11.3",
-    "@types/passport": "^0.4.6",
-    "@types/passport-cognito": "^0.1.0",
     "@types/uuid": "^3.4.4",
     "jasmine": "^3.2.0"
   },
   "dependencies": {
     "aws-sdk": "^2.327.0",
     "body-parser": "^1.18.3",
+    "cognito-express": "^2.0.12",
     "express": "^4.16.3",
-    "passport": "^0.4.0",
-    "passport-cognito": "^0.1.13",
+    "node-fetch": "^2.2.0",
     "uuid": "^3.3.2"
   }
 }
