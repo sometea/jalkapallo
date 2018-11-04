@@ -34,13 +34,13 @@ router.use(express.json());
 router.post('/', (req, res) => {
     const secretHash = crypto
         .createHmac('SHA256', cognitoConfig.clientSecret)
-        .update('admin' + cognitoConfig.clientId)
+        .update(req.body.username + cognitoConfig.clientId)
         .digest('base64');
     cognito.adminInitiateAuth({
         AuthFlow: 'ADMIN_NO_SRP_AUTH',
         AuthParameters: {
-            USERNAME: 'admin',
-            PASSWORD: 'AdminAdminAdmin',
+            USERNAME: req.body.username,
+            PASSWORD: req.body.password,
             SECRET_HASH: secretHash,
         },
         ClientId: cognitoConfig.clientId,
@@ -52,8 +52,8 @@ router.post('/', (req, res) => {
                 cognito.adminRespondToAuthChallenge({
                     ChallengeName: 'NEW_PASSWORD_REQUIRED',
                     ChallengeResponses: {
-                        NEW_PASSWORD: 'AdminAdminAdmin',
-                        USERNAME: 'admin',
+                        NEW_PASSWORD: req.body.password,
+                        USERNAME: req.body.username,
                         SECRET_HASH: secretHash,
                     },
                     Session: data.Session,

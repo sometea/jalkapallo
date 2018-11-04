@@ -5,6 +5,8 @@ import { getDocumentClient } from './dbConfig';
 const documentClient = getDocumentClient();
 const dynamoDb = new AWS.DynamoDB();
 
+const errorCodeTableExists = 'ResourceInUseException';
+
 dynamoDb.createTable({
     TableName: 'Articles',
     KeySchema: [
@@ -18,7 +20,7 @@ dynamoDb.createTable({
         WriteCapacityUnits: 1,
     },
 }, (err, data) => {
-    if (err) {
+    if (err && err.code !== errorCodeTableExists) {
         console.error("Unable to create table. Error JSON:", JSON.stringify(err, null, 2));
     } else {
         console.log("Created table. Table description JSON:", JSON.stringify(data, null, 2));
