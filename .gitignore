@@ -65,4 +65,4 @@ typings/
 dist/
 
 # Config
-cognitoConfig.ts
+config.ts

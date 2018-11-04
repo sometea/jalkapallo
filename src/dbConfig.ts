@@ -1,9 +1,7 @@
 import AWS from 'aws-sdk';
+import { dynamoDbConfig } from './config';
 
 export function getDocumentClient() {
-    AWS.config.update({
-        region: "eu-west-1",
-        endpoint: "http://localhost:8000",
-    }, true);    
+    AWS.config.update(dynamoDbConfig, true);    
     return new AWS.DynamoDB.DocumentClient();
 }

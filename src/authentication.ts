@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import express from 'express';
 import crypto from 'crypto';
 import AWS from 'aws-sdk';
-import { cognitoConfig } from './cognitoConfig';
+import { cognitoConfig } from './config';
 
 const cognito = new AWS.CognitoIdentityServiceProvider({
     region: 'eu-west-1',
