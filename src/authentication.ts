@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import express from 'express';
 import crypto from 'crypto';
 import AWS from 'aws-sdk';
+import cors from 'cors';
 import { cognitoConfig } from './config';
 
 const cognito = new AWS.CognitoIdentityServiceProvider({
@@ -17,7 +18,7 @@ const cognitoExpress = new CognitoExpress({
 });
 
 export function authenticateWithCognito(req: Request, res: Response, next: () => void) {
-    const accessTokenFromClient = req.headers.accesstoken;
+    const accessTokenFromClient = req.headers.authorization;
     if (!accessTokenFromClient) return res.status(401).send("Access Token missing from header");
  
     cognitoExpress.validate(accessTokenFromClient, (err: any, response: any) => {
@@ -30,6 +31,7 @@ export function authenticateWithCognito(req: Request, res: Response, next: () =>
 export const router = express.Router();
 
 router.use(express.json());
+router.use(cors({ origin: 'http://localhost:3000' }));
 
 router.post('/', (req, res) => {
     const secretHash = crypto
