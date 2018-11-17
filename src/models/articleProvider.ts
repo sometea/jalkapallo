@@ -50,20 +50,34 @@ export class ArticleProvider implements CrudInterface<Article> {
         return;
     }
 
-    async save(dataObject: Article): Promise<Article> {
+    async create(dataObject: Article): Promise<Article> {
         const newArticle = new Article(
             dataObject.getTitle(),
             dataObject.getBody(),
             uuidv4()
         );
-        await this.db.put({
+        await this.putArticle(newArticle);
+        return newArticle;
+    }
+
+    async update(id: string, dataObject: Article): Promise<Article> {
+        const updatedArticle = new Article(
+            dataObject.getTitle(),
+            dataObject.getBody(),
+            id
+        );
+        await this.putArticle(updatedArticle);
+        return updatedArticle;
+    }
+
+    private async putArticle(article: Article) {
+        return this.db.put({
             TableName: this.tableName,
             Item: {
-                id: newArticle.getId(),
-                title: newArticle.getTitle(),
-                body: newArticle.getBody(),
+                id: article.getId(),
+                title: article.getTitle(),
+                body: article.getBody(),
             }
         }).promise();
-        return newArticle;
     }
 }

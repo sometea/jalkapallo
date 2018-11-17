@@ -38,10 +38,20 @@ describe('ArticleProvider', () => {
     it('saves an article to the db', async () => {
         documentClientSpy.put = jasmine.createSpy('put').and.returnValue({ promise: () => {} });
         const article = new Article('test', 'test', 'test');
-        const result = await articleProvider.save(article);
+        const result = await articleProvider.create(article);
         expect(result.getBody()).toEqual(article.getBody());
         expect(result.getTitle()).toEqual(article.getTitle());
         expect(result.getId()).not.toEqual(article.getId());
         expect(documentClientSpy.put).toHaveBeenCalled();
-    })
+    });
+
+    it('updates an article', async () => {
+        documentClientSpy.put = jasmine.createSpy('put').and.returnValue({ promise: () => {} });
+        const article = new Article('test', 'test', 'test');
+        const result = await articleProvider.update('testId', article);
+        expect(result.getBody()).toEqual(article.getBody());
+        expect(result.getTitle()).toEqual(article.getTitle());
+        expect(result.getId()).toEqual('testId');
+        expect(documentClientSpy.put).toHaveBeenCalled();
+    });
 });

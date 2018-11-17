@@ -50,24 +50,33 @@ router.post('/', (req, res) => {
     }, (err, data) => {
         if (err) return res.status(401).send(err);
         if (!data.AuthenticationResult) {
-            if (data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-                cognito.adminRespondToAuthChallenge({
-                    ChallengeName: 'NEW_PASSWORD_REQUIRED',
-                    ChallengeResponses: {
-                        NEW_PASSWORD: req.body.password,
-                        USERNAME: req.body.username,
-                        SECRET_HASH: secretHash,
-                    },
-                    Session: data.Session,
-                    ClientId: cognitoConfig.clientId,
-                    UserPoolId: cognitoConfig.userPoolId,
-
-                }, (err, data) => {
-                    if (err) return res.status(401).send(err);
-                    return res.json(data.AuthenticationResult);
-                })
-            }
+            return handlePasswordChallenge(data, req, secretHash, res);
         }
         return res.json(data.AuthenticationResult);
     });
 });
+
+function handlePasswordChallenge(
+    data: AWS.CognitoIdentityServiceProvider.AdminInitiateAuthResponse,
+    req: Request,
+    secretHash: string,
+    res: Response
+) {
+    if (data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+        cognito.adminRespondToAuthChallenge({
+            ChallengeName: 'NEW_PASSWORD_REQUIRED',
+            ChallengeResponses: {
+                NEW_PASSWORD: req.body.password,
+                USERNAME: req.body.username,
+                SECRET_HASH: secretHash,
+            },
+            Session: data.Session,
+            ClientId: cognitoConfig.clientId,
+            UserPoolId: cognitoConfig.userPoolId,
+        }, (err, data) => {
+            if (err)
+                return res.status(401).send(err);
+            return res.json(data.AuthenticationResult);
+        });
+    }
+}

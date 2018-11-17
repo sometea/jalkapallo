@@ -24,13 +24,20 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    const postBody = req.body;
-    const newArticle = await articleProvider.save(new Article(
-        postBody.title,
-        postBody.body,
+    const newArticle = await articleProvider.create(new Article(
+        req.body.title,
+        req.body.body,
         ''
     ));
     return res.json(newArticle);
+});
+
+router.put('/:id', async (req, res) => {
+    const updatedArticle = await articleProvider.update(
+        req.params.id,
+        new Article(req.body.title, req.body.body, '')
+    );
+    return res.json(updatedArticle);
 });
 
 router.delete('/:id', async (req, res) => {
