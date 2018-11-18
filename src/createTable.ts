@@ -28,6 +28,26 @@ dynamoDb.createTable({
     }
 });
 
+dynamoDb.createTable({
+    TableName: 'Images',
+    KeySchema: [
+        { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+        { AttributeName: 'id', AttributeType: 'S' },
+    ],
+    ProvisionedThroughput: {
+        ReadCapacityUnits: 1,
+        WriteCapacityUnits: 1,
+    },
+}, (err, data) => {
+    if (err && err.code !== errorCodeTableExists) {
+        console.error("Unable to create table. Error JSON:", JSON.stringify(err, null, 2));
+    } else {
+        console.log("Created table. Table description JSON:", JSON.stringify(data, null, 2));
+    }
+});
+
 function saveSampleData() {
     const items = [
         { title: 'The badgers are back.', body: 'All the badgers have been seen again.' },
