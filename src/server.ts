@@ -1,5 +1,5 @@
 import express from 'express';
-import { router as authenticationRouter } from './authentication';
+import { router as authenticationRouter } from './routes/authentication';
 import { router as articleRouter } from './routes/articles';
 import bodyParser from 'body-parser';
 
