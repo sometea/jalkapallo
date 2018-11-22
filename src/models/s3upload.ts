@@ -55,7 +55,7 @@ export class S3Upload {
         const uploadParams = { 
             Bucket: 'jalkapallo-images',
             Key: this.getKey(filename),
-            Body: body,
+            Body: Buffer.from(body),
             ContentType: this.getContentType(filename), 
             ACL: 'public-read',
         };

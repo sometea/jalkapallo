@@ -4,7 +4,7 @@ import { router as articleRouter } from './routes/articles';
 import { router as imagesRouter } from './routes/images';
 import bodyParser from 'body-parser';
 
-export const app = express().use(bodyParser.json());
+export const app = express().use(bodyParser.json({ limit: '10mb' }));
 
 app.get('/', (req, res) => {
     return res.send('Hello World.');

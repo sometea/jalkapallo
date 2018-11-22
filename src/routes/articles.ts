@@ -19,8 +19,12 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const article = await articleProvider.get(req.params.id);
-    return res.json(article);
+    try {
+        const article = await articleProvider.get(req.params.id);
+        return res.json(article);
+    } catch (e) {
+        return res.status(404).json(e);
+    }
 });
 
 router.post('/', async (req, res) => {

@@ -26,7 +26,7 @@ router.get('/:id', async (req, res) => {
     return res.json(image);
 });
 
-router.post('/', s3upload.uploadMiddleware, async (req, res) => {
+router.post('/', (req, res, next) => s3upload.uploadMiddleware(req, res, next), async (req, res) => {
     const newImage = await imageProvider.create(new Image(
         req.body.title,
         req.body.filename,
@@ -36,7 +36,7 @@ router.post('/', s3upload.uploadMiddleware, async (req, res) => {
     return res.json(newImage);
 });
 
-router.put('/:id', s3upload.updateMiddleware, async (req, res) => {
+router.put('/:id', (req, res, next) => s3upload.updateMiddleware(req, res, next), async (req, res) => {
     const updatedImage = await imageProvider.update(
         req.params.id,
         new Image(req.body.title, req.body.filename, req.body.url, '')
@@ -44,7 +44,7 @@ router.put('/:id', s3upload.updateMiddleware, async (req, res) => {
     return res.json(updatedImage);
 });
 
-router.delete('/:id', s3upload.deleteMiddleware, async (req, res) => {
+router.delete('/:id', (req, res, next) => s3upload.deleteMiddleware(req, res, next), async (req, res) => {
     await imageProvider.delete(req.params.id);
     return res.json({
         message: 'Deleted image ' + req.params.id + '.',
