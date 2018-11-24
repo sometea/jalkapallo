@@ -44,6 +44,7 @@ router.put('/:id', (req, res, next) => s3upload.updateMiddleware(req, res, next)
 router.delete('/:id', (req, res, next) => s3upload.deleteMiddleware(req, res, next), async (req, res) => {
     await imageProvider.delete(req.params.id);
     return res.json({
-        message: 'Deleted image ' + req.params.id + '.',
+        message: 'Deleted image.',
+        id: req.params.id,
     });
 });

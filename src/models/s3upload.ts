@@ -7,6 +7,7 @@ export class S3Upload {
     private contentTypeMapping: any = {
         '.html': 'text/html',
         '.css': 'text/css',
+        '.txt': 'text/plain',
         '.js': 'application/javascript',
         '.png': 'image/png',
         '.jpg': 'image/jpg',
@@ -55,7 +56,7 @@ export class S3Upload {
         const uploadParams = { 
             Bucket: 'jalkapallo-images',
             Key: this.getKey(filename),
-            Body: Buffer.from(body),
+            Body: Buffer.from(body.replace(/^data:.+\/(.+);base64,/, ''), 'base64'),
             ContentType: this.getContentType(filename), 
             ACL: 'public-read',
         };

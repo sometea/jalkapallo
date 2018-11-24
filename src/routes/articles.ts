@@ -48,6 +48,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     await articleProvider.delete(req.params.id);
     return res.json({
-        message: 'Deleted article ' + req.params.id + '.',
+        message: 'Deleted article.',
+        id: req.params.id,
     });
 });

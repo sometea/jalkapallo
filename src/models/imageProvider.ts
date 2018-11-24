@@ -1,4 +1,4 @@
-import { CrudInterface } from "../crudInterface";
+import { CrudInterface } from "./crudInterface";
 import { Image } from "./image";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import uuidv4 from 'uuid';

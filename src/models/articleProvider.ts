@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { CrudInterface } from "../crudInterface";
+import { CrudInterface } from "./crudInterface";
 import { Article } from "./article";
 import uuidv4 from 'uuid';
 
