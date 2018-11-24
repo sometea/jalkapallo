@@ -1,11 +1,8 @@
 import { authenticateWithCognito } from './authentication';
 import cors from 'cors';
 import express from 'express';
-import aws from 'aws-sdk';
-import { ImageProvider } from '../models/imageProvider';
-import { getDocumentClient } from '../dbConfig';
 import { Image } from '../models/image';
-import { S3Upload } from '../models/s3upload';
+import { container } from '../container';
 
 export const router = express.Router();
 
@@ -13,8 +10,8 @@ router.use(express.json());
 router.use(cors({ origin: 'http://localhost:3000', exposedHeaders: 'X-Total-Count' }));
 router.use(authenticateWithCognito);
 
-const imageProvider = new ImageProvider(getDocumentClient());
-const s3upload = new S3Upload(imageProvider, new aws.S3());
+const imageProvider = container.ImageProvider();
+const s3upload = container.S3Upload();
 
 router.get('/', async (req, res) => {
     const images = await imageProvider.list();

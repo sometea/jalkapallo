@@ -5,17 +5,10 @@ import crypto from 'crypto';
 import AWS from 'aws-sdk';
 import cors from 'cors';
 import { cognitoConfig } from '../config';
+import { container } from '../container';
 
-const cognito = new AWS.CognitoIdentityServiceProvider({
-    region: 'eu-west-1',
-});
-
-const cognitoExpress = new CognitoExpress({
-    region: 'eu-west-1',
-    cognitoUserPoolId: cognitoConfig.userPoolId,
-    tokenUse: 'access',
-    tokenExpiration: 3600000,
-});
+const cognito = container.CognitoIdentityServiceProvider();
+const cognitoExpress = container.CognitoExpress();
 
 export function authenticateWithCognito(req: Request, res: Response, next: () => void) {
     const accessTokenFromClient = req.headers.authorization;
@@ -47,7 +40,7 @@ router.post('/', (req, res) => {
         },
         ClientId: cognitoConfig.clientId,
         UserPoolId: cognitoConfig.userPoolId,
-    }, (err, data) => {
+    }, (err: any, data: any) => {
         if (err) return res.status(401).send(err);
         if (!data.AuthenticationResult) {
             return handlePasswordChallenge(data, req, secretHash, res);
@@ -73,7 +66,7 @@ function handlePasswordChallenge(
             Session: data.Session,
             ClientId: cognitoConfig.clientId,
             UserPoolId: cognitoConfig.userPoolId,
-        }, (err, data) => {
+        }, (err: any, data: any) => {
             if (err)
                 return res.status(401).send(err);
             return res.json(data.AuthenticationResult);
