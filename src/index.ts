@@ -1,7 +1,6 @@
 import { app } from './server';
+import { jalkapalloConfig } from './config';
 
-const port = 3001;
-
-app.listen(port, () => {
-    console.log('Jalkapallo listening on port ' + port + '.');
+app.listen(jalkapalloConfig.port, () => {
+    console.log('Jalkapallo listening on port ' + jalkapalloConfig.port + '.');
 });

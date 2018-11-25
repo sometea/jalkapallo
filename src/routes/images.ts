@@ -7,7 +7,6 @@ import { container } from '../container';
 export const router = express.Router();
 
 router.use(express.json());
-router.use(cors({ origin: 'http://localhost:3000', exposedHeaders: 'X-Total-Count' }));
 router.use(authenticateWithCognito);
 
 const imageProvider = container.ImageProvider();
