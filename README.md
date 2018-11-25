@@ -30,6 +30,13 @@ npm run deploy
 Deployes the zip-file to AWS Lambda. The function is called "Jalkapallo". It is immediately published. Note that currently, you will have to manually
 set up an API Gateway forwarding all requests to this Lambda function. In the future, a CloudFormation template is planned that automates this step.
 
+## Configuration
+The application takes some configuration data from objects defined in ```config.ts```, which is not a part of this repository. To create it, copy
+```config.example.ts``` to ```config.ts``` and adapt it to your needs. Then, rebuild.
+
+## Usage
+To be written.
+
 ## Amazon AWS requirements
 You will need an account with AWS to deploy and use this code. The software currently assumes that a global AWS configuration is present, e.g.
 in ```~/.aws/config``` and ```~/.aws/credentials```. Further instructions for this can be found in the AWS documentation. Note that Amazon will charge
