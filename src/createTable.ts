@@ -1,8 +1,8 @@
 import AWS from 'aws-sdk';
 import uuidv4 from 'uuid';
-import { getDocumentClient } from './dbConfig';
+import { container } from './container';
 
-const documentClient = getDocumentClient();
+const documentClient = container.DocumentClient();
 const dynamoDb = new AWS.DynamoDB();
 
 const errorCodeTableExists = 'ResourceInUseException';

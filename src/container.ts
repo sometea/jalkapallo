@@ -5,10 +5,12 @@ import { ImageProvider } from './models/imageProvider';
 import CognitoExpress from 'cognito-express'; 
 import { S3Upload } from './models/s3upload';
 
-export const container: any = {
-    S3: () => container._s3 || (container._s3 = new aws.S3(awsConfig)),
+export const container = {
+    _s3: new aws.S3(awsConfig),
+    _documentClient: new aws.DynamoDB.DocumentClient(dynamoDbConfig),
+    S3: () => container._s3,
     S3Upload: () => new S3Upload(container.ImageProvider(), container.S3()),
-    DocumentClient: () => container._documentClient || (container._documentClient = new aws.DynamoDB.DocumentClient(dynamoDbConfig)),
+    DocumentClient: () => container._documentClient,
     ArticleProvider: () => new ArticleProvider(container.DocumentClient()),
     ImageProvider: () => new ImageProvider(container.DocumentClient()),
     CognitoIdentityServiceProvider: () => new aws.CognitoIdentityServiceProvider(awsConfig),

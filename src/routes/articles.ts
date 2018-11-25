@@ -1,6 +1,4 @@
 import express from 'express';
-import { ArticleProvider } from '../models/articleProvider';
-import { getDocumentClient } from '../dbConfig';
 import { Article } from '../models/article';
 import { authenticateWithCognito } from './authentication';
 import cors from 'cors';
