@@ -3,6 +3,7 @@ import aws from 'aws-sdk';
 import { Request, Response } from 'express';
 import { ImageProvider } from "./imageProvider";
 import { Image } from "./image";
+import { jalkapalloConfig } from '../config';
 
 describe('S3Upload', () => {
     let s3upload: S3Upload;
@@ -32,7 +33,7 @@ describe('S3Upload', () => {
         spyOn(s3upload, 'getKey').and.returnValue('testKey');
         await s3upload.uploadMiddleware(request, response, () => {});
         expect(s3Spy.upload).toHaveBeenCalledWith({
-            Bucket: 'jalkapallo-images',
+            Bucket: jalkapalloConfig.s3Bucket,
             Key: 'testKey',
             Body: Buffer.from('testBody', 'base64'),
             ContentType: 'application/octet-stream', 
@@ -55,7 +56,7 @@ describe('S3Upload', () => {
     it('should call s3 deleteObject with correct parameters', async () => {
         await s3upload.deleteMiddleware(request, response, () => {});
         expect(s3Spy.deleteObject).toHaveBeenCalledWith({
-            Bucket: 'jalkapallo-images',
+            Bucket: jalkapalloConfig.s3Bucket,
             Key: 'testFilename',
         });
     });

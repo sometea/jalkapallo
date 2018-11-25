@@ -2,6 +2,7 @@ export const jalkapalloConfig = {
     port: 3001,
     allowCORFrom: 'localhost:3000',
     maxUploadSize: '10mb',
+    s3Bucket: 'jalkapallo-images',
 };
 
 export const cognitoConfig = {

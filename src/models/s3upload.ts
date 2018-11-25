@@ -2,6 +2,7 @@ import aws from 'aws-sdk';
 import path from 'path';
 import { Request, Response } from 'express';
 import { ImageProvider } from './imageProvider';
+import { jalkapalloConfig } from '../config';
 
 export class S3Upload {
     private contentTypeMapping: any = {
@@ -54,7 +55,7 @@ export class S3Upload {
 
     private async upload(filename: string, body: string) {
         const uploadParams = { 
-            Bucket: 'jalkapallo-images',
+            Bucket: jalkapalloConfig.s3Bucket,
             Key: this.getKey(filename),
             Body: Buffer.from(body.replace(/^data:.+\/(.+);base64,/, ''), 'base64'),
             ContentType: this.getContentType(filename), 
@@ -65,7 +66,7 @@ export class S3Upload {
 
     private async delete(key: string) {
         await this.s3.deleteObject({
-            Bucket: 'jalkapallo-images',
+            Bucket: jalkapalloConfig.s3Bucket,
             Key: key,
         }).promise();
     }
