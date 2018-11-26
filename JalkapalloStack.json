@@ -1,0 +1,215 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "d744d3c9-d059-4cec-997b-12acdd36f71c": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 630,
+                    "y": 220
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "758dab48-f5e9-4624-ae02-7c88adfddafe": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 540,
+                    "y": 150
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "de5a062f-32f1-4101-afbe-d8959996f69b": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 330,
+                    "y": 220
+                },
+                "z": 0,
+                "embeds": []
+            },
+            "2c9e15b9-c7f5-4ec9-9161-4f589559dfbb": {
+                "size": {
+                    "width": 140,
+                    "height": 140
+                },
+                "position": {
+                    "x": 140,
+                    "y": 130
+                },
+                "z": 0,
+                "embeds": [],
+                "iscontainedinside": [
+                    "de5a062f-32f1-4101-afbe-d8959996f69b"
+                ]
+            },
+            "ff6e88ff-d3fe-4e73-abcf-3f32cfcd63ec": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 372,
+                    "y": 21
+                },
+                "z": 0,
+                "embeds": [],
+                "iscontainedinside": [
+                    "2c9e15b9-c7f5-4ec9-9161-4f589559dfbb"
+                ]
+            },
+            "afce553f-84a3-4886-a050-3e181a24221b": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 640,
+                    "y": 70
+                },
+                "z": 0,
+                "embeds": []
+            }
+        }
+    },
+    "Resources": {
+        "S3B4QNP2": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "jalkapallo-images",
+                "AccessControl": "PublicRead"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d744d3c9-d059-4cec-997b-12acdd36f71c"
+                }
+            }
+        },
+        "AGRA47NBY": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+                "Name": "Jalkapallo-API",
+                "EndpointConfiguration": {
+                    "Types": [
+                        "REGIONAL"
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "de5a062f-32f1-4101-afbe-d8959996f69b"
+                }
+            }
+        },
+        "AGR441XU": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+                "ParentId": {
+                    "Fn::GetAtt": [
+                        "Jalkapallo-API",
+                        "RootResourceId"
+                    ]
+                },
+                "PathPart": "{proxy+}",
+                "RestApiId": {
+                    "Ref": "AGRA47NBY"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "2c9e15b9-c7f5-4ec9-9161-4f589559dfbb"
+                }
+            }
+        },
+        "AGM1V2W8": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "HttpMethod": "ANY",
+                "AuthorizationType": "NONE",
+                "Integration": {
+                    "Type": "AWS_PROXY",
+                    "uri": {
+                        "Fn::Sub": [
+                            "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations",
+                            {
+                                "lambdaArn": {
+                                    "Fn::GetAtt": [
+                                        "LambdaFunction",
+                                        "Arn"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "ResourceId": {
+                    "Ref": "AGR441XU"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "ff6e88ff-d3fe-4e73-abcf-3f32cfcd63ec"
+                }
+            }
+        },
+        "LambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "FunctionName": "Jalkapallo",
+                "MemorySize": 128,
+                "Runtime": "nodejs8.10",
+                "Code": {
+                    "S3Bucket": "jalkapallo-code",
+                    "S3Key": "deployment.zip"
+                },
+                "Role": "arn:aws:iam::232619866597:role/service-role/jalkapaloRole"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "758dab48-f5e9-4624-ae02-7c88adfddafe"
+                }
+            }
+        },
+        "DDBT2X28C": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "TableName": "Articles",
+                "KeySchema": [
+                    {
+                        "AttributeName": "i",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "id",
+                        "AttributeType": "S"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "afce553f-84a3-4886-a050-3e181a24221b"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "Type": "AWS_PROXY",
+        "Uri": "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/Jalkapallo/invocations"
+    }
+}
