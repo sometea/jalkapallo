@@ -79,6 +79,18 @@
                 },
                 "z": 0,
                 "embeds": []
+            },
+            "3ddf597d-9ac3-4491-baa5-f1b50f85944e": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 710,
+                    "y": 110
+                },
+                "z": 0,
+                "embeds": []
             }
         }
     },
@@ -116,7 +128,7 @@
             "Properties": {
                 "ParentId": {
                     "Fn::GetAtt": [
-                        "Jalkapallo-API",
+                        "AGRA47NBY",
                         "RootResourceId"
                     ]
                 },
@@ -186,7 +198,7 @@
                 "TableName": "Articles",
                 "KeySchema": [
                     {
-                        "AttributeName": "i",
+                        "AttributeName": "id",
                         "KeyType": "HASH"
                     }
                 ],
@@ -206,10 +218,33 @@
                     "id": "afce553f-84a3-4886-a050-3e181a24221b"
                 }
             }
+        },
+        "DDBT4QQHB": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "TableName": "Images",
+                "KeySchema": [
+                    {
+                        "AttributeName": "id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "id",
+                        "AttributeType": "S"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 1,
+                    "WriteCapacityUnits": 1
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "3ddf597d-9ac3-4491-baa5-f1b50f85944e"
+                }
+            }
         }
-    },
-    "Parameters": {
-        "Type": "AWS_PROXY",
-        "Uri": "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/Jalkapallo/invocations"
     }
 }
