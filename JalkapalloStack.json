@@ -278,12 +278,9 @@
                 },
                 "Action": "lambda:InvokeFunction",
                 "Principal": "apigateway.amazonaws.com",
-                "SourceAccount": {
-                    "Ref": "AWS::AccountId"
-                },
                 "SourceArn": {
                     "Fn::Sub": [
-                        "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${AGRA47NBY}/*",
+                        "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${AGRA47NBY}/*/*/*",
                         {}
                     ]
                 }
