@@ -165,7 +165,7 @@
                 "HttpMethod": "ANY",
                 "AuthorizationType": "NONE",
                 "Integration": {
-                    "IntegrationHttpMethod": "ANY",
+                    "IntegrationHttpMethod": "POST",
                     "Type": "AWS_PROXY",
                     "Uri": {
                         "Fn::Sub": [
