@@ -65,7 +65,8 @@
                 "z": 0,
                 "embeds": [],
                 "iscontainedinside": [
-                    "2c9e15b9-c7f5-4ec9-9161-4f589559dfbb"
+                    "2c9e15b9-c7f5-4ec9-9161-4f589559dfbb",
+                    "de5a062f-32f1-4101-afbe-d8959996f69b"
                 ]
             },
             "afce553f-84a3-4886-a050-3e181a24221b": {
@@ -91,6 +92,21 @@
                 },
                 "z": 0,
                 "embeds": []
+            },
+            "b9541d83-be16-457a-92a9-6893a7027406": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 470,
+                    "y": 70
+                },
+                "z": 0,
+                "embeds": [],
+                "isassociatedwith": [
+                    "758dab48-f5e9-4624-ae02-7c88adfddafe"
+                ]
             }
         }
     },
@@ -98,7 +114,7 @@
         "S3B4QNP2": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName": "jalkapallo-images",
+                "BucketName": "jalkapallo-images-bucket",
                 "AccessControl": "PublicRead"
             },
             "Metadata": {
@@ -110,7 +126,7 @@
         "AGRA47NBY": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-                "Name": "Jalkapallo-API",
+                "Name": "JalkapalloAPI",
                 "EndpointConfiguration": {
                     "Types": [
                         "REGIONAL"
@@ -149,8 +165,9 @@
                 "HttpMethod": "ANY",
                 "AuthorizationType": "NONE",
                 "Integration": {
+                    "IntegrationHttpMethod": "ANY",
                     "Type": "AWS_PROXY",
-                    "uri": {
+                    "Uri": {
                         "Fn::Sub": [
                             "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations",
                             {
@@ -163,6 +180,9 @@
                             }
                         ]
                     }
+                },
+                "RestApiId": {
+                    "Ref": "AGRA47NBY"
                 },
                 "ResourceId": {
                     "Ref": "AGR441XU"
@@ -177,11 +197,11 @@
         "LambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
-                "FunctionName": "Jalkapallo",
+                "FunctionName": "JalkapalloLambda",
                 "MemorySize": 128,
                 "Runtime": "nodejs8.10",
                 "Code": {
-                    "S3Bucket": "jalkapallo-code",
+                    "S3Bucket": "jalkapallo-deployment",
                     "S3Key": "deployment.zip"
                 },
                 "Handler": "lambda.handler",
@@ -196,7 +216,7 @@
         "DDBT2X28C": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
-                "TableName": "Articles",
+                "TableName": "JalkapalloArticles",
                 "KeySchema": [
                     {
                         "AttributeName": "id",
@@ -223,7 +243,7 @@
         "DDBT4QQHB": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
-                "TableName": "Images",
+                "TableName": "JalkapalloImages",
                 "KeySchema": [
                     {
                         "AttributeName": "id",
@@ -244,6 +264,33 @@
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "3ddf597d-9ac3-4491-baa5-f1b50f85944e"
+                }
+            }
+        },
+        "LP3VZC7": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "LambdaFunction",
+                        "Arn"
+                    ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                },
+                "SourceArn": {
+                    "Fn::Sub": [
+                        "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${AGRA47NBY}/*",
+                        {}
+                    ]
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "b9541d83-be16-457a-92a9-6893a7027406"
                 }
             }
         }
