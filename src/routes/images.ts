@@ -1,5 +1,4 @@
 import { authenticateWithCognito } from './authentication';
-import cors from 'cors';
 import express from 'express';
 import { Image } from '../models/image';
 import { container } from '../container';

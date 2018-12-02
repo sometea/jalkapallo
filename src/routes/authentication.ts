@@ -24,7 +24,6 @@ export function authenticateWithCognito(req: Request, res: Response, next: () =>
 export const router = express.Router();
 
 router.use(express.json());
-router.use(cors({ origin: 'http://localhost:3000' }));
 
 router.post('/', (req, res) => {
     const secretHash = crypto
@@ -41,7 +40,7 @@ router.post('/', (req, res) => {
         ClientId: cognitoConfig.clientId,
         UserPoolId: cognitoConfig.userPoolId,
     }, (err: any, data: any) => {
-        if (err) return res.status(401).send(err);
+        if (err) return res.status(401).send({error: err, request: req.body});
         if (!data.AuthenticationResult) {
             return handlePasswordChallenge(data, req, secretHash, res);
         }
