@@ -9,9 +9,9 @@
                 },
                 "position": {
                     "x": 630,
-                    "y": 220
+                    "y": 210
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": []
             },
             "758dab48-f5e9-4624-ae02-7c88adfddafe": {
@@ -23,31 +23,31 @@
                     "x": 540,
                     "y": 150
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": []
             },
             "de5a062f-32f1-4101-afbe-d8959996f69b": {
                 "size": {
-                    "width": 140,
-                    "height": 140
+                    "width": 150,
+                    "height": 150
                 },
                 "position": {
                     "x": 330,
-                    "y": 220
+                    "y": 210
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": []
             },
             "2c9e15b9-c7f5-4ec9-9161-4f589559dfbb": {
                 "size": {
-                    "width": 140,
-                    "height": 140
+                    "width": 150,
+                    "height": 150
                 },
                 "position": {
-                    "x": 140,
-                    "y": 130
+                    "x": 150,
+                    "y": 120
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": [],
                 "iscontainedinside": [
                     "de5a062f-32f1-4101-afbe-d8959996f69b"
@@ -59,10 +59,10 @@
                     "height": 60
                 },
                 "position": {
-                    "x": 372,
-                    "y": 21
+                    "x": 360,
+                    "y": 30
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": [],
                 "iscontainedinside": [
                     "2c9e15b9-c7f5-4ec9-9161-4f589559dfbb",
@@ -75,10 +75,10 @@
                     "height": 60
                 },
                 "position": {
-                    "x": 560,
+                    "x": 570,
                     "y": 60
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": []
             },
             "3ddf597d-9ac3-4491-baa5-f1b50f85944e": {
@@ -87,10 +87,10 @@
                     "height": 60
                 },
                 "position": {
-                    "x": 650,
+                    "x": 660,
                     "y": 60
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": []
             },
             "b9541d83-be16-457a-92a9-6893a7027406": {
@@ -99,13 +99,59 @@
                     "height": 60
                 },
                 "position": {
-                    "x": 470,
-                    "y": 70
+                    "x": 480,
+                    "y": 60
                 },
-                "z": 0,
+                "z": 1,
                 "embeds": [],
                 "isassociatedwith": [
                     "758dab48-f5e9-4624-ae02-7c88adfddafe"
+                ]
+            },
+            "7d32d957-17e5-41e5-9859-35d4422d8799": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 270,
+                    "y": 30
+                },
+                "z": 1,
+                "embeds": [],
+                "iscontainedinside": [
+                    "d1793e8a-91a6-477b-a40d-ee1a7412b22c",
+                    "de5a062f-32f1-4101-afbe-d8959996f69b"
+                ]
+            },
+            "d1793e8a-91a6-477b-a40d-ee1a7412b22c": {
+                "size": {
+                    "width": 150,
+                    "height": 150
+                },
+                "position": {
+                    "x": 30,
+                    "y": 120
+                },
+                "z": 1,
+                "embeds": [],
+                "iscontainedinside": [
+                    "de5a062f-32f1-4101-afbe-d8959996f69b"
+                ]
+            },
+            "7caec61f-9f4e-411f-a488-1c0f5d23175a": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 180,
+                    "y": 300
+                },
+                "z": 1,
+                "embeds": [],
+                "iscontainedinside": [
+                    "de5a062f-32f1-4101-afbe-d8959996f69b"
                 ]
             }
         }
@@ -288,6 +334,79 @@
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "b9541d83-be16-457a-92a9-6893a7027406"
+                }
+            }
+        },
+        "AGM4HC21": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                "HttpMethod": "ANY",
+                "AuthorizationType": "NONE",
+                "Integration": {
+                    "IntegrationHttpMethod": "POST",
+                    "Type": "AWS_PROXY",
+                    "Uri": {
+                        "Fn::Sub": [
+                            "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations",
+                            {
+                                "lambdaArn": {
+                                    "Fn::GetAtt": [
+                                        "LambdaFunction",
+                                        "Arn"
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "RestApiId": {
+                    "Ref": "AGRA47NBY"
+                },
+                "ResourceId": {
+                    "Ref": "AGR3MLJU"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7d32d957-17e5-41e5-9859-35d4422d8799"
+                }
+            }
+        },
+        "AGR3MLJU": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+                "ParentId": {
+                    "Fn::GetAtt": [
+                        "AGRA47NBY",
+                        "RootResourceId"
+                    ]
+                },
+                "PathPart": "/",
+                "RestApiId": {
+                    "Ref": "AGRA47NBY"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d1793e8a-91a6-477b-a40d-ee1a7412b22c"
+                }
+            }
+        },
+        "AGDEC0W": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+                "RestApiId": {
+                    "Ref": "AGRA47NBY",
+                    "Description": "test deployment",
+                    "StageDescription": {
+                        "Description": "test stage"
+                    },
+                    "StageName": "test"
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "7caec61f-9f4e-411f-a488-1c0f5d23175a"
                 }
             }
         }
