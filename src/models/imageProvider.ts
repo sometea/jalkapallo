@@ -2,9 +2,10 @@ import { CrudInterface } from "./crudInterface";
 import { Image } from "./image";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import uuidv4 from 'uuid';
+import { jalkapalloConfig } from "../config";
 
 export class ImageProvider implements CrudInterface<Image> {
-    private tableName = 'Images';
+    private tableName = jalkapalloConfig.imagesTable;
 
     constructor(private db: DocumentClient) { }
 

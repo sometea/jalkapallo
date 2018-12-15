@@ -3,6 +3,8 @@ export const jalkapalloConfig = {
     allowCORFrom: 'http://localhost:3000',
     maxUploadSize: '10mb',
     s3Bucket: 'jalkapallo-images',
+    articlesTable: 'JalkapalloArticles',
+    imagesTable: 'JalkapalloImages',
 };
 
 export const cognitoConfig = {

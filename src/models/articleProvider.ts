@@ -2,9 +2,10 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CrudInterface } from "./crudInterface";
 import { Article } from "./article";
 import uuidv4 from 'uuid';
+import { jalkapalloConfig } from "../config";
 
 export class ArticleProvider implements CrudInterface<Article> {
-    private tableName = 'Articles';
+    private tableName = jalkapalloConfig.articlesTable;
 
     constructor(private db: DocumentClient) { }
 

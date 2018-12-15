@@ -1,7 +1,6 @@
 import express from 'express';
 import { Article } from '../models/article';
 import { authenticateWithCognito } from './authentication';
-import cors from 'cors';
 import { container } from '../container';
 
 export const router = express.Router();
