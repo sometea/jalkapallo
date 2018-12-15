@@ -2,6 +2,7 @@ import express from 'express';
 import { Article } from '../models/article';
 import { authenticateWithCognito } from './authentication';
 import { container } from '../container';
+import { jalkapalloConfig } from '../config';
 
 export const router = express.Router();
 
@@ -9,6 +10,7 @@ router.use(express.json());
 router.use(authenticateWithCognito);
 
 const articleProvider = container.ArticleProvider();
+const articleExport = container.ArticleExport();
 
 router.get('/', async (req, res) => {
     const articles = await articleProvider.list();
@@ -30,6 +32,7 @@ router.post('/', async (req, res) => {
         req.body.body,
         ''
     ));
+    await processUpdateHooks(newArticle);
     return res.json(newArticle);
 });
 
@@ -43,8 +46,21 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     await articleProvider.delete(req.params.id);
+    await processDeleteHooks(req.params.id);
     return res.json({
         message: 'Deleted article.',
         id: req.params.id,
     });
 });
+
+async function processUpdateHooks(article: Article) {
+    if (jalkapalloConfig.shouldExport) {
+        await articleExport.createOrUpdate(article);
+    }
+}
+
+async function processDeleteHooks(id: string) {
+    if (jalkapalloConfig.shouldExport) {
+        await articleExport.delete(id);
+    }
+}

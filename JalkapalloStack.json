@@ -153,6 +153,17 @@
                 "iscontainedinside": [
                     "de5a062f-32f1-4101-afbe-d8959996f69b"
                 ]
+            },
+            "d3c8fadc-180b-4e57-8895-9172fd12e4ca": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 723.8871419916064,
+                    "y": 157.96774927113515
+                },
+                "z": 0
             }
         }
     },
@@ -407,6 +418,18 @@
             "Metadata": {
                 "AWS::CloudFormation::Designer": {
                     "id": "7caec61f-9f4e-411f-a488-1c0f5d23175a"
+                }
+            }
+        },
+        "S3B2CAR5": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "jalkapallo-export",
+                "AccessControl": "PublicRead"
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Designer": {
+                    "id": "d3c8fadc-180b-4e57-8895-9172fd12e4ca"
                 }
             }
         }

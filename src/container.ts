@@ -4,6 +4,7 @@ import { ArticleProvider } from './models/articleProvider';
 import { ImageProvider } from './models/imageProvider';
 import CognitoExpress from 'cognito-express'; 
 import { S3Upload } from './models/s3upload';
+import { ArticleExport } from './models/articleExport';
 
 export const container = {
     _s3: new aws.S3(awsConfig),
@@ -14,6 +15,7 @@ export const container = {
     DocumentClient: () => container._documentClient,
     DynamoDB: () => container._dynamodDb,
     ArticleProvider: () => new ArticleProvider(container.DocumentClient()),
+    ArticleExport: () => new ArticleExport(container.S3()),
     ImageProvider: () => new ImageProvider(container.DocumentClient()),
     CognitoIdentityServiceProvider: () => new aws.CognitoIdentityServiceProvider(awsConfig),
     CognitoExpress: () => new CognitoExpress({
