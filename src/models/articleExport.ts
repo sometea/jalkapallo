@@ -26,7 +26,7 @@ ${dataObject.getBody()}`;
 
     async createOrUpdate(dataObject: Article): Promise<Article> {
         await this.s3.upload({
-            Bucket: jalkapalloConfig.s3Bucket,
+            Bucket: jalkapalloConfig.exportBucket,
             Key: this.getFilename(dataObject.getId()),
             Body: Buffer.from(this.getFileContent(dataObject)),
             ContentType: 'text/plain',
