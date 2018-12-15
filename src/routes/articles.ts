@@ -32,7 +32,11 @@ router.post('/', async (req, res) => {
         req.body.body,
         ''
     ));
-    await processUpdateHooks(newArticle);
+    try {
+        await processUpdateHooks(newArticle);
+    } catch (e) {
+        return res.status(500).json(e);
+    }
     return res.json(newArticle);
 });
 
@@ -41,12 +45,21 @@ router.put('/:id', async (req, res) => {
         req.params.id,
         new Article(req.body.title, req.body.body, '')
     );
+    try {
+        await processUpdateHooks(updatedArticle);
+    } catch (e) {
+        return res.status(500).json(e);
+    }
     return res.json(updatedArticle);
 });
 
 router.delete('/:id', async (req, res) => {
     await articleProvider.delete(req.params.id);
-    await processDeleteHooks(req.params.id);
+    try {
+        await processDeleteHooks(req.params.id);
+    } catch (e) {
+        return res.status(500).json(e);
+    }
     return res.json({
         message: 'Deleted article.',
         id: req.params.id,
