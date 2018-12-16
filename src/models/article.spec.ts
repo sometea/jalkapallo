@@ -2,9 +2,10 @@ import { Article } from './article';
 
 describe('article', () => {
     let article: Article;
+    const testDate = new Date();
 
     beforeEach(() => {
-        article = new Article('title', 'body', 'id');
+        article = new Article('title', 'body', 'id', testDate);
     });
 
     it('has a title', () => {
@@ -17,5 +18,9 @@ describe('article', () => {
 
     it('has an id', () => {
         expect(article.getId()).toBe('id');
+    });
+
+    it('has a date', () => {
+        expect(article.getDate()).toBe(testDate);
     });
 })

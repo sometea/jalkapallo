@@ -13,6 +13,7 @@ export class ArticleExport implements ExportInterface<Article> {
     private getFileContent(dataObject: Article) {
         return `---
 title: ${dataObject.getTitle()}
+date: ${dataObject.getDate().toDateString()}
 ---
 ${dataObject.getBody()}`;
     }

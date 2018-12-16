@@ -18,7 +18,7 @@ export class ArticleProvider implements CrudInterface<Article> {
                     return reject(err);
                 } else if (data.Items) {
                     const articles = data.Items.map((item) => {
-                        return new Article(item.title, item.body, item.id);
+                        return new Article(item.title, item.body, item.id, new Date(item.date));
                     });
                     return resolve(articles);
                 }
@@ -36,7 +36,7 @@ export class ArticleProvider implements CrudInterface<Article> {
                 if (err) {
                     return reject(err);
                 } else if (data.Item) {
-                    return resolve(new Article(data.Item.title, data.Item.body, data.Item.id));
+                    return resolve(new Article(data.Item.title, data.Item.body, data.Item.id, new Date(data.Item.date)));
                 }
                 return reject('No item found.');
             });
@@ -78,6 +78,7 @@ export class ArticleProvider implements CrudInterface<Article> {
                 id: article.getId(),
                 title: article.getTitle(),
                 body: article.getBody(),
+                date: article.getDate().toString(),
             }
         }).promise();
     }

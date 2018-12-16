@@ -6,6 +6,7 @@ import { Article } from './article';
 describe('ArticleExport', () => {
     let articleExport: ArticleExport;
     let s3Spy: aws.S3;
+    const testDate = new Date();
 
     beforeEach(() => {
         s3Spy = jasmine.createSpyObj<aws.S3>('S3', ['upload', 'deleteObject']);
@@ -24,11 +25,11 @@ describe('ArticleExport', () => {
     });
 
     it('should upload an exported version of an article to s3', async () => {
-        await articleExport.createOrUpdate(new Article('testTitle', 'testBody', 'testId'));
+        await articleExport.createOrUpdate(new Article('testTitle', 'testBody', 'testId', testDate));
         expect(s3Spy.upload).toHaveBeenCalledWith({
             Bucket: jalkapalloConfig.exportBucket,
             Key: jalkapalloConfig.exportDirectory + '/testId.md',
-            Body: Buffer.from("---\ntitle: testTitle\n---\ntestBody"),
+            Body: Buffer.from("---\ntitle: testTitle\ndate: " + testDate.toDateString() + "\n---\ntestBody"),
             ContentType: 'text/plain',
             ACL: 'public-read',
         });
