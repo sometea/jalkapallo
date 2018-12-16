@@ -4,6 +4,7 @@ export const jalkapalloConfig = {
     maxUploadSize: '10mb',
     s3Bucket: 'jalkapallo-images-bucket',
     exportBucket: 'jalkapallo-export',
+    exportDirectory: 'content',
     shouldExport: false,
     articlesTable: 'JalkapalloArticles',
     imagesTable: 'JalkapalloImages',

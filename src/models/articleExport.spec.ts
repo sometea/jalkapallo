@@ -19,15 +19,15 @@ describe('ArticleExport', () => {
         await articleExport.delete('testId');
         expect(s3Spy.deleteObject).toHaveBeenCalledWith({
             Bucket: jalkapalloConfig.exportBucket,
-            Key: 'testId.md'
+            Key: jalkapalloConfig.exportDirectory + '/testId.md'
         });
     });
 
     it('should upload an exported version of an article to s3', async () => {
         await articleExport.createOrUpdate(new Article('testTitle', 'testBody', 'testId'));
         expect(s3Spy.upload).toHaveBeenCalledWith({
-            Bucket: jalkapalloConfig.s3Bucket,
-            Key: 'testId.md',
+            Bucket: jalkapalloConfig.exportBucket,
+            Key: jalkapalloConfig.exportDirectory + '/testId.md',
             Body: Buffer.from("---\ntitle: testTitle\n---\ntestBody"),
             ContentType: 'text/plain',
             ACL: 'public-read',
