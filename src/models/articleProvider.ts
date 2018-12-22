@@ -1,7 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CrudInterface } from "./crudInterface";
 import { Article } from "./article";
-import uuidv4 from 'uuid';
 import { jalkapalloConfig } from "../config";
 
 export class ArticleProvider implements CrudInterface<Article> {
@@ -17,9 +16,7 @@ export class ArticleProvider implements CrudInterface<Article> {
                 if (err) {
                     return reject(err);
                 } else if (data.Items) {
-                    const articles = data.Items.map((item) => {
-                        return new Article(item.title, item.body, item.id, new Date(item.date));
-                    });
+                    const articles = data.Items.map(item => this.mapItemToArticle(item));
                     return resolve(articles);
                 }
                 return reject('No items found.');
@@ -36,7 +33,7 @@ export class ArticleProvider implements CrudInterface<Article> {
                 if (err) {
                     return reject(err);
                 } else if (data.Item) {
-                    return resolve(new Article(data.Item.title, data.Item.body, data.Item.id, new Date(data.Item.date)));
+                    return resolve(this.mapItemToArticle(data.Item));
                 }
                 return reject('No item found.');
             });
@@ -52,21 +49,13 @@ export class ArticleProvider implements CrudInterface<Article> {
     }
 
     async create(dataObject: Article): Promise<Article> {
-        const newArticle = new Article(
-            dataObject.getTitle(),
-            dataObject.getBody(),
-            uuidv4()
-        );
+        const newArticle = Article.copyWithId(dataObject);
         await this.putArticle(newArticle);
         return newArticle;
     }
 
     async update(id: string, dataObject: Article): Promise<Article> {
-        const updatedArticle = new Article(
-            dataObject.getTitle(),
-            dataObject.getBody(),
-            id
-        );
+        const updatedArticle = Article.copyWithId(dataObject, id);
         await this.putArticle(updatedArticle);
         return updatedArticle;
     }
@@ -79,7 +68,13 @@ export class ArticleProvider implements CrudInterface<Article> {
                 title: article.getTitle(),
                 body: article.getBody(),
                 date: article.getDate().toString(),
+                type: article.getType(),
+                metaData: article.getMetaData(),
             }
         }).promise();
+    }
+
+    private mapItemToArticle(item: DocumentClient.AttributeMap): Article {
+        return new Article(item.title, item.body, item.id, new Date(item.date), item.metaData ? item.metaData : {})
     }
 }
