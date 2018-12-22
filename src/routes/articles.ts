@@ -30,7 +30,10 @@ router.post('/', async (req, res) => {
     const newArticle = await articleProvider.create(new Article(
         req.body.title,
         req.body.body,
-        ''
+        '',
+        new Date(),
+        req.body.type,
+        req.body.metaData
     ));
     try {
         await processUpdateHooks(newArticle);
@@ -43,7 +46,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const updatedArticle = await articleProvider.update(
         req.params.id,
-        new Article(req.body.title, req.body.body, '')
+        new Article(req.body.title, req.body.body, '', new Date(), req.body.type, req.body.metaData)
     );
     try {
         await processUpdateHooks(updatedArticle);

@@ -1,9 +1,7 @@
-import CognitoExpress from 'cognito-express'; 
 import { Request, Response } from 'express';
 import express from 'express';
 import crypto from 'crypto';
 import AWS from 'aws-sdk';
-import cors from 'cors';
 import { cognitoConfig } from '../config';
 import { container } from '../container';
 
