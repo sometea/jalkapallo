@@ -8,36 +8,20 @@ export class ArticleProvider implements CrudInterface<Article> {
 
     constructor(private db: DocumentClient) { }
 
-    list(): Promise<Article[]> {
-        return new Promise((resolve, reject) => {
-            this.db.scan({
-                TableName: this.tableName,
-            }, (err, data) => {
-                if (err) {
-                    return reject(err);
-                } else if (data.Items) {
-                    const articles = data.Items.map(item => this.mapItemToArticle(item));
-                    return resolve(articles);
-                }
-                return reject('No items found.');
-            });
-        });
+    async list(): Promise<Article[]> {
+        const data = await this.db.scan({ TableName: this.tableName }).promise();
+        return data.Items ? data.Items.map(item => this.mapItemToArticle(item)) : [];
     }
 
-    get(id: string): Promise<Article> {
-        return new Promise((resolve, reject) => {
-            this.db.get({
-                TableName: this.tableName,
-                Key: { 'id': id },
-            }, (err, data) => {
-                if (err) {
-                    return reject(err);
-                } else if (data.Item) {
-                    return resolve(this.mapItemToArticle(data.Item));
-                }
-                return reject('No item found.');
-            });
-        });
+    async get(id: string): Promise<Article> {
+        const data = await this.db.get({
+            TableName: this.tableName,
+            Key: { 'id': id },
+        }).promise();
+        if (data.Item) {
+            return this.mapItemToArticle(data.Item);
+        }
+        throw new Error('No item with id ' + id + ' found.');
     }
 
     async delete(id: string): Promise<void> {
@@ -75,6 +59,6 @@ export class ArticleProvider implements CrudInterface<Article> {
     }
 
     private mapItemToArticle(item: DocumentClient.AttributeMap): Article {
-        return new Article(item.title, item.body, item.id, new Date(item.date), item.metaData ? item.metaData : {})
+        return new Article(item.title, item.body, item.id, new Date(item.date), item.type, item.metaData ? item.metaData : {})
     }
 }

@@ -12,21 +12,20 @@ describe('ArticleProvider', () => {
     });
 
     it('lists articles', async () => {
-        documentClientSpy.scan = jasmine.createSpy().and.callFake((params: any, callback: any) => {
-            callback('', { Items: []});
-        });
+        documentClientSpy.scan = jasmine.createSpy('scan').and.returnValue({ promise: () => ({ Items: [] }) });
         const result = await articleProvider.list();
         expect(result).toEqual([]);
     });
 
     it('gets an article by id', async () => {
-        documentClientSpy.get = jasmine.createSpy().and.callFake((params: any, callback: any) => {
-            callback('', { Item: { title: 'title', body: 'body', id: 'id' }});
-        });
+        documentClientSpy.get = jasmine.createSpy('get').and.returnValue(
+            { promise: () => ({ Item: { title: 'title', body: 'body', id: 'id' , type: 'type' } }) }
+        );
         const article = await articleProvider.get('testId');
         expect(article.getBody()).toEqual('body');
         expect(article.getTitle()).toEqual('title');
         expect(article.getId()).toEqual('id');
+        expect(article.getType()).toEqual('type');
     });
 
     it('deletes an article by id', async () => {
