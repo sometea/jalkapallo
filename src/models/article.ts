@@ -1,5 +1,9 @@
 import uuidv4 from 'uuid';
 
+export interface MetaData {
+    [key: string]: string
+};
+
 export class Article {
     constructor(
         private title: string,
@@ -7,7 +11,7 @@ export class Article {
         private id: string, 
         private date: Date = new Date(),
         private type: string = '',
-        private metaData: Object = {}
+        private metaData: MetaData = {}
         ) {}
 
     static copyWithId(article: Article, id: string|null = null) {
@@ -41,7 +45,7 @@ export class Article {
         return this.type;
     }
 
-    getMetaData(): Object {
+    getMetaData(): MetaData {
         return this.metaData;
     }
 }

@@ -25,11 +25,13 @@ describe('ArticleExport', () => {
     });
 
     it('should upload an exported version of an article to s3', async () => {
-        await articleExport.createOrUpdate(new Article('testTitle', 'testBody', 'testId', testDate));
+        await articleExport.createOrUpdate(
+            new Article('testTitle', 'testBody', 'testId', testDate, '', { testMetaData: 'test' })
+        );
         expect(s3Spy.upload).toHaveBeenCalledWith({
             Bucket: jalkapalloConfig.exportBucket,
             Key: jalkapalloConfig.exportDirectory + '/testId.md',
-            Body: Buffer.from("---\ntitle: testTitle\ndate: " + testDate.toDateString() + "\n---\ntestBody"),
+            Body: Buffer.from("---\ntestMetaData: test\ntitle: testTitle\ndate: " + testDate.toDateString() + "\n---\ntestBody"),
             ContentType: 'text/plain',
             ACL: 'public-read',
         });

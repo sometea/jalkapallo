@@ -11,11 +11,15 @@ export class ArticleExport implements ExportInterface<Article> {
     }
 
     private getFileContent(dataObject: Article) {
-        return `---
+        return `---${this.getHeaderFromMetaData(dataObject.getMetaData())}
 title: ${dataObject.getTitle()}
 date: ${dataObject.getDate().toDateString()}
 ---
 ${dataObject.getBody()}`;
+    }
+
+    private getHeaderFromMetaData(metaData: {[key: string]: string}) {
+        return Object.keys(metaData).reduce((previous, current) => previous + "\n" + current + ": " + metaData[current], '');
     }
 
     async delete(id: string): Promise<void> {
