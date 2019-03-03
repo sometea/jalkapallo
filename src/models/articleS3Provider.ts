@@ -42,7 +42,7 @@ export class ArticleS3Provider implements CrudInterface<Article> {
         const jsonPart = JSON.stringify({
             ...article.getMetaData(),
             title: article.getTitle(),
-            data: article.getDate.toString(),
+            date: article.getDate().toISOString(),
         }) + '\n\n';
         return jsonPart + article.getBody();
     }
@@ -67,7 +67,7 @@ export class ArticleS3Provider implements CrudInterface<Article> {
         await this.s3.upload({
             Bucket: jalkapalloConfig.exportBucket,
             Key: this.makeKey(id),
-            Body: Buffer.from(this.mapArticleToString(dataObject)),
+            Body: this.mapArticleToString(dataObject),
             ContentType: 'text/plain',
             ACL: 'public-read',
         }).promise();
