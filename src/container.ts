@@ -1,4 +1,7 @@
-import aws from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import DynamoDB from 'aws-sdk/clients/dynamodb';
+import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { dynamoDbConfig, cognitoConfig, awsConfig } from './config';
 import { ArticleProvider } from './models/articleProvider';
 import { ImageProvider } from './models/imageProvider';
@@ -7,9 +10,9 @@ import { S3Upload } from './models/s3upload';
 import { ArticleExport } from './models/articleExport';
 
 export const container = {
-    _s3: new aws.S3(awsConfig),
-    _documentClient: new aws.DynamoDB.DocumentClient(dynamoDbConfig),
-    _dynamodDb: new aws.DynamoDB(dynamoDbConfig),
+    _s3: new S3(awsConfig),
+    _documentClient: new DocumentClient(dynamoDbConfig),
+    _dynamodDb: new DynamoDB(dynamoDbConfig),
     S3: () => container._s3,
     S3Upload: () => new S3Upload(container.ImageProvider(), container.S3()),
     DocumentClient: () => container._documentClient,
@@ -17,7 +20,7 @@ export const container = {
     ArticleProvider: () => new ArticleProvider(container.DocumentClient()),
     ArticleExport: () => new ArticleExport(container.S3()),
     ImageProvider: () => new ImageProvider(container.DocumentClient()),
-    CognitoIdentityServiceProvider: () => new aws.CognitoIdentityServiceProvider(awsConfig),
+    CognitoIdentityServiceProvider: () => new CognitoIdentityServiceProvider(awsConfig),
     CognitoExpress: () => new CognitoExpress({
         region: 'eu-west-1',
         cognitoUserPoolId: cognitoConfig.userPoolId,

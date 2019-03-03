@@ -1,15 +1,15 @@
-import aws from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { ArticleExport } from "./articleExport";
 import { jalkapalloConfig } from '../config';
 import { Article } from './article';
 
 describe('ArticleExport', () => {
     let articleExport: ArticleExport;
-    let s3Spy: aws.S3;
+    let s3Spy: S3;
     const testDate = new Date();
 
     beforeEach(() => {
-        s3Spy = jasmine.createSpyObj<aws.S3>('S3', ['upload', 'deleteObject']);
+        s3Spy = jasmine.createSpyObj<S3>('S3', ['upload', 'deleteObject']);
         s3Spy.upload = jasmine.createSpy('upload').and.returnValue({ promise: () => ({ Key: 'testKey', Location: 'testLocation' }) });
         s3Spy.deleteObject = jasmine.createSpy('deleteObject').and.returnValue({ promise: () => {} });
 

@@ -1,4 +1,4 @@
-import aws from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import path from 'path';
 import { Request, Response } from 'express';
 import { ImageProvider } from './imageProvider';
@@ -17,7 +17,7 @@ export class S3Upload {
         '.svg': 'image/svg+xml',
     };
 
-    constructor(private imageProvider: ImageProvider, private s3: aws.S3) {
+    constructor(private imageProvider: ImageProvider, private s3: S3) {
     }
 
     getKey(filename: string) {

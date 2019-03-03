@@ -1,5 +1,5 @@
 import { S3Upload } from "./s3upload";
-import aws from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
 import { ImageProvider } from "./imageProvider";
 import { Image } from "./image";
@@ -7,7 +7,7 @@ import { jalkapalloConfig } from '../config';
 
 describe('S3Upload', () => {
     let s3upload: S3Upload;
-    let s3Spy: aws.S3;
+    let s3Spy: S3;
     let imageProviderSpy: ImageProvider;
     const request = jasmine.createSpyObj<Request>('Request', ['get']);
     request.body = { filename: 'testFilename', body: 'testBody' };
@@ -17,7 +17,7 @@ describe('S3Upload', () => {
     beforeEach(() => {
         imageProviderSpy = jasmine.createSpyObj<ImageProvider>('ImageProvider', ['get']);
         imageProviderSpy.get = jasmine.createSpy('get').and.returnValue(new Image('testTitle', 'testFilename', 'testUrl', 'testId'))
-        s3Spy = jasmine.createSpyObj<aws.S3>('S3', ['upload', 'deleteObject']);
+        s3Spy = jasmine.createSpyObj<S3>('S3', ['upload', 'deleteObject']);
         s3Spy.upload = jasmine.createSpy('upload').and.returnValue({ promise: () => ({ Key: 'testKey', Location: 'testLocation' }) });
         s3Spy.deleteObject = jasmine.createSpy('deleteObject').and.returnValue({ promise: () => {} });
         s3upload = new S3Upload(imageProviderSpy, s3Spy);

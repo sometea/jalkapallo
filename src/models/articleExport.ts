@@ -1,10 +1,10 @@
-import aws from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { ExportInterface } from "./exportInterface";
 import { Article } from "./article";
 import { jalkapalloConfig } from '../config';
 
 export class ArticleExport implements ExportInterface<Article> {
-    constructor(private s3: aws.S3) {}
+    constructor(private s3: S3) {}
 
     private getKey(id: string): string {
         return jalkapalloConfig.exportDirectory + '/' + id + '.md';

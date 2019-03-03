@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import express from 'express';
 import crypto from 'crypto';
-import AWS from 'aws-sdk';
+import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { cognitoConfig } from '../config';
 import { container } from '../container';
 
@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
 });
 
 function handlePasswordChallenge(
-    data: AWS.CognitoIdentityServiceProvider.AdminInitiateAuthResponse,
+    data: CognitoIdentityServiceProvider.AdminInitiateAuthResponse,
     req: Request,
     secretHash: string,
     res: Response
