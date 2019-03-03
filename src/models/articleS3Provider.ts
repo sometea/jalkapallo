@@ -2,10 +2,11 @@ import { CrudInterface } from "./crudInterface";
 import { Article } from "./article";
 import { S3 } from "aws-sdk/clients/all";
 import { jalkapalloConfig } from "../config";
+import { ArticleMarkdownMapper } from "./articleMarkdownMapper";
 
 export class ArticleS3Provider implements CrudInterface<Article> {
 
-    constructor(private s3: S3) { }
+    constructor(private s3: S3, private mapper: ArticleMarkdownMapper) { }
 
     async list(): Promise<Article[]> {
         const result = await this.s3.listObjects({
@@ -31,11 +32,7 @@ export class ArticleS3Provider implements CrudInterface<Article> {
         if (!result.Body) {
             throw new Error('Failed to get article with id: ' + id);
         }
-        return this.mapBufferToArticle(result.Body);
-    }
-
-    private mapBufferToArticle(result: S3.Body): Article {
-        return new Article('', '', ''); // TODO: actually parse something
+        return this.mapper.toArticle(result.Body.toString(), id);
     }
 
     private mapArticleToString(article: Article): string {
@@ -67,7 +64,7 @@ export class ArticleS3Provider implements CrudInterface<Article> {
         await this.s3.upload({
             Bucket: jalkapalloConfig.exportBucket,
             Key: this.makeKey(id),
-            Body: this.mapArticleToString(dataObject),
+            Body: this.mapper.toMarkdown(dataObject),
             ContentType: 'text/plain',
             ACL: 'public-read',
         }).promise();
