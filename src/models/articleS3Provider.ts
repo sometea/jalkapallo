@@ -35,15 +35,6 @@ export class ArticleS3Provider implements CrudInterface<Article> {
         return this.mapper.toArticle(result.Body.toString(), id);
     }
 
-    private mapArticleToString(article: Article): string {
-        const jsonPart = JSON.stringify({
-            ...article.getMetaData(),
-            title: article.getTitle(),
-            date: article.getDate().toISOString(),
-        }) + '\n\n';
-        return jsonPart + article.getBody();
-    }
-
     async delete(id: string): Promise<void> {
         await this.s3.deleteObject({
             Bucket: jalkapalloConfig.exportBucket,
