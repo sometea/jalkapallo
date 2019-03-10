@@ -1,7 +1,6 @@
 import { FileS3Provider } from "./fileS3Provider";
 import { S3 } from "aws-sdk/clients/all";
 import { jalkapalloConfig } from "../config";
-import { S3File } from "./s3file";
 
 describe('FileS3Provider', () => {
     let fileS3Provider: FileS3Provider;
