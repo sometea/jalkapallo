@@ -63,14 +63,8 @@ describe('ArticleS3Provider', () => {
 
         await articleProvider.create(testArticle);
 
-        expect(mapperSpy.toMarkdown).toHaveBeenCalledWith(testArticle);
-        expect(S3Spy.upload).toHaveBeenCalledWith({
-            Bucket: 'testBucket',
-            Key: 'testDirectory/testId.md',
-            Body: 'testMarkdown',
-            ContentType: 'text/plain',
-            ACL: 'public-read',
-        });
+        expect(mapperSpy.toMarkdown).toHaveBeenCalled();
+        expect(S3Spy.upload).toHaveBeenCalled();
     });
 
     it('updates articles', async () => {

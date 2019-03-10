@@ -47,8 +47,9 @@ export class ArticleS3Provider implements CrudInterface<Article> {
     }
 
     async create(dataObject: Article): Promise<Article> {
-        await this.createOrUpdate(dataObject.getId(), dataObject);
-        return dataObject;
+        const newArticle = Article.copyWithId(dataObject);
+        await this.createOrUpdate(newArticle.getId(), newArticle);
+        return newArticle;
     }
 
     private async createOrUpdate(id: string, dataObject: Article): Promise<void> {
