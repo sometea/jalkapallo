@@ -3,6 +3,7 @@ import { S3 } from "aws-sdk/clients/all";
 import { S3File } from "./s3file";
 import { CrudInterface } from "./crudInterface";
 import { jalkapalloConfig } from "../config";
+import { Result } from 'range-parser';
 
 export class FileS3Provider implements CrudInterface<S3File> {
     private contentTypeMapping: any = {
@@ -71,25 +72,8 @@ export class FileS3Provider implements CrudInterface<S3File> {
         });
     }
 
-    async create(dataObject: S3File, content: string = ''): Promise<S3File> {
-        const result = await this.s3.upload({ 
-            Bucket: jalkapalloConfig.s3Bucket,
-            Key: dataObject.getId(),
-            Body: Buffer.from(content.replace(/^data:.+\/(.+);base64,/, ''), 'base64'),
-            ContentType: this.getContentType(dataObject.getId()),
-            ACL: 'public-read',
-        }).promise();
-        await this.s3.putObjectTagging({
-            Bucket: jalkapalloConfig.s3Bucket,
-            Key: result.Key,
-            Tagging: {
-                TagSet: [
-                    { Key: 'title', Value: dataObject.getTitle() },
-                    { Key: 'url', Value: result.Location },
-                ],
-            },
-        }).promise();
-        return S3File.copyWithUrl(dataObject, result.Location);
+    async create(dataObject: S3File): Promise<S3File> {
+        return this.update(dataObject.getId(), dataObject)
     }
 
     private getContentType(filename: string) {
@@ -97,24 +81,33 @@ export class FileS3Provider implements CrudInterface<S3File> {
         return contentType ? contentType : 'application/octet-stream';
     }
 
-    async update(id: string, dataObject: S3File, content: string = ''): Promise<S3File> {
-        const result = await this.s3.upload({ 
-            Bucket: jalkapalloConfig.s3Bucket,
-            Key: id,
-            Body: Buffer.from(content.replace(/^data:.+\/(.+);base64,/, ''), 'base64'),
-            ContentType: this.getContentType(id),
-            ACL: 'public-read',
-        }).promise();
+    async update(id: string, dataObject: S3File): Promise<S3File> {
+        const location = await this.updateOrRetrieveObject(dataObject, id);
         await this.s3.putObjectTagging({
             Bucket: jalkapalloConfig.s3Bucket,
-            Key: result.Key,
+            Key: id,
             Tagging: {
                 TagSet: [
                     { Key: 'title', Value: dataObject.getTitle() },
-                    { Key: 'url', Value: result.Location },
+                    { Key: 'url', Value: location },
                 ],
             },
         }).promise();
-        return S3File.copyWithUrl(dataObject, result.Location);
+        return S3File.copyWithUrl(dataObject, location);
+    }
+
+    private async updateOrRetrieveObject(dataObject: S3File, id: string) {
+        if (dataObject.hasContent()) {
+            const result = await this.s3.upload({
+                Bucket: jalkapalloConfig.s3Bucket,
+                Key: id,
+                Body: dataObject.getContent(),
+                ContentType: this.getContentType(id),
+                ACL: 'public-read',
+            }).promise();
+            return result.Location;
+        }
+        const objectOnS3 = await this.get(id);
+        return objectOnS3.getUrl();
     }
 }
