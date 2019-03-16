@@ -14,8 +14,8 @@ describe('ArticleS3Provider', () => {
         S3Spy = jasmine.createSpyObj<S3>('S3', ['upload', 'deleteObject', 'listObjects', 'getObject']);
         mapperSpy = jasmine.createSpyObj<ArticleMarkdownMapper>('ArticleMarkdownMapper', ['toArticle', 'toMarkdown']);
         articleProvider = new ArticleS3Provider(S3Spy, mapperSpy);
-        jalkapalloConfig.exportBucket = 'testBucket';
-        jalkapalloConfig.exportDirectory = 'testDirectory';
+        jalkapalloConfig.articlesBucket = 'testBucket';
+        jalkapalloConfig.articlesDirectory = 'testDirectory';
     });
 
     it('lists articles', async () => {

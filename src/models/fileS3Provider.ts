@@ -3,7 +3,6 @@ import { S3 } from "aws-sdk/clients/all";
 import { S3File } from "./s3file";
 import { CrudInterface } from "./crudInterface";
 import { jalkapalloConfig } from "../config";
-import { Result } from 'range-parser';
 
 export class FileS3Provider implements CrudInterface<S3File> {
     private contentTypeMapping: any = {
@@ -22,7 +21,7 @@ export class FileS3Provider implements CrudInterface<S3File> {
 
     async list(): Promise<S3File[]> {
         const result = await this.s3.listObjects({
-            Bucket: jalkapalloConfig.s3Bucket,
+            Bucket: jalkapalloConfig.filesBucket,
         }).promise();
         if (!result.Contents) {
             return [];
@@ -35,7 +34,7 @@ export class FileS3Provider implements CrudInterface<S3File> {
             throw new Error("Key missing in S3 response.");
         }
         const taggingResult = await this.s3.getObjectTagging({
-            Bucket: jalkapalloConfig.s3Bucket,
+            Bucket: jalkapalloConfig.filesBucket,
             Key: object.Key,
         }).promise();
         return new S3File(
@@ -52,7 +51,7 @@ export class FileS3Provider implements CrudInterface<S3File> {
 
     async get(id: string): Promise<S3File> {
         const result = await this.s3.getObjectTagging({
-            Bucket: jalkapalloConfig.s3Bucket,
+            Bucket: jalkapalloConfig.filesBucket,
             Key: id,
         }).promise();
         if (!result.TagSet) {
@@ -67,7 +66,7 @@ export class FileS3Provider implements CrudInterface<S3File> {
 
     async delete(id: string): Promise<void> {
         await this.s3.deleteObject({
-            Bucket: jalkapalloConfig.s3Bucket,
+            Bucket: jalkapalloConfig.filesBucket,
             Key: id,
         }).promise();
     }
@@ -84,7 +83,7 @@ export class FileS3Provider implements CrudInterface<S3File> {
     async update(id: string, dataObject: S3File): Promise<S3File> {
         const location = await this.updateOrRetrieveObject(dataObject, id);
         await this.s3.putObjectTagging({
-            Bucket: jalkapalloConfig.s3Bucket,
+            Bucket: jalkapalloConfig.filesBucket,
             Key: id,
             Tagging: {
                 TagSet: [
@@ -99,7 +98,7 @@ export class FileS3Provider implements CrudInterface<S3File> {
     private async updateOrRetrieveObject(dataObject: S3File, id: string) {
         if (dataObject.hasContent()) {
             const result = await this.s3.upload({
-                Bucket: jalkapalloConfig.s3Bucket,
+                Bucket: jalkapalloConfig.filesBucket,
                 Key: id,
                 Body: dataObject.getContent(),
                 ContentType: this.getContentType(id),
