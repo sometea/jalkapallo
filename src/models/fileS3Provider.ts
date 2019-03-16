@@ -69,11 +69,11 @@ export class FileS3Provider implements CrudInterface<S3File> {
         await this.s3.deleteObject({
             Bucket: jalkapalloConfig.s3Bucket,
             Key: id,
-        });
+        }).promise();
     }
 
     async create(dataObject: S3File): Promise<S3File> {
-        return this.update(dataObject.getId(), dataObject)
+        return await this.update(dataObject.getId(), dataObject);
     }
 
     private getContentType(filename: string) {
