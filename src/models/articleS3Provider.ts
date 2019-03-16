@@ -10,8 +10,8 @@ export class ArticleS3Provider implements CrudInterface<Article> {
 
     async list(): Promise<Article[]> {
         const result = await this.s3.listObjects({
-            Bucket: jalkapalloConfig.exportBucket,
-            Prefix: jalkapalloConfig.exportDirectory + '/',
+            Bucket: jalkapalloConfig.articlesBucket,
+            Prefix: jalkapalloConfig.articlesDirectory + '/',
         }).promise();
         if (!result.Contents) {
             return [];
@@ -20,14 +20,14 @@ export class ArticleS3Provider implements CrudInterface<Article> {
     }    
 
     private mapS3ObjectToArticle(object: S3.Object): Article {
-        const key = object.Key ? object.Key : '';
-        return new Article(key, '', key, object.LastModified, 'article');
+        const id = object.Key ? this.idFromKey(object.Key) : '';
+        return new Article(id, '', id, object.LastModified, 'article');
     }
 
     async get(id: string): Promise<Article> {
         const result = await this.s3.getObject({
-            Bucket: jalkapalloConfig.exportBucket,
-            Key: this.makeKey(id),
+            Bucket: jalkapalloConfig.articlesBucket,
+            Key: this.keyFromId(id),
         }).promise();
         if (!result.Body) {
             throw new Error('Failed to get article with id: ' + id);
@@ -37,13 +37,18 @@ export class ArticleS3Provider implements CrudInterface<Article> {
 
     async delete(id: string): Promise<void> {
         await this.s3.deleteObject({
-            Bucket: jalkapalloConfig.exportBucket,
-            Key: this.makeKey(id),
+            Bucket: jalkapalloConfig.articlesBucket,
+            Key: this.keyFromId(id),
         }).promise();
     }
 
-    private makeKey(id: string): string {
-        return jalkapalloConfig.exportDirectory + '/' + id + '.md';
+    private keyFromId(id: string): string {
+        return jalkapalloConfig.articlesDirectory + '/' + id + '.md';
+    }
+
+    private idFromKey(key: string): string {
+        return key.replace(jalkapalloConfig.articlesDirectory + '/', '')
+            .replace('.md', '');
     }
 
     async create(dataObject: Article): Promise<Article> {
@@ -54,8 +59,8 @@ export class ArticleS3Provider implements CrudInterface<Article> {
 
     private async createOrUpdate(id: string, dataObject: Article): Promise<void> {
         await this.s3.upload({
-            Bucket: jalkapalloConfig.exportBucket,
-            Key: this.makeKey(id),
+            Bucket: jalkapalloConfig.articlesBucket,
+            Key: this.keyFromId(id),
             Body: this.mapper.toMarkdown(dataObject),
             ContentType: 'text/plain',
             ACL: 'public-read',

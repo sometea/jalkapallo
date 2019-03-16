@@ -7,7 +7,7 @@ export class ArticleExport implements ExportInterface<Article> {
     constructor(private s3: S3) {}
 
     private getKey(id: string): string {
-        return jalkapalloConfig.exportDirectory + '/' + id + '.md';
+        return jalkapalloConfig.articlesDirectory + '/' + id + '.md';
     }
 
     private getFileContent(dataObject: Article) {
@@ -24,14 +24,14 @@ ${dataObject.getBody()}`;
 
     async delete(id: string): Promise<void> {
         await this.s3.deleteObject({
-            Bucket: jalkapalloConfig.exportBucket,
+            Bucket: jalkapalloConfig.articlesBucket,
             Key: this.getKey(id),
         }).promise();
     }
 
     async createOrUpdate(dataObject: Article): Promise<Article> {
         await this.s3.upload({
-            Bucket: jalkapalloConfig.exportBucket,
+            Bucket: jalkapalloConfig.articlesBucket,
             Key: this.getKey(dataObject.getId()),
             Body: Buffer.from(this.getFileContent(dataObject)),
             ContentType: 'text/plain',

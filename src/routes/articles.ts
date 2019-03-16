@@ -9,8 +9,7 @@ export const router = express.Router();
 router.use(express.json());
 router.use(authenticateWithCognito);
 
-const articleProvider = container.ArticleProvider();
-const articleExport = container.ArticleExport();
+const articleProvider = container.ArticleS3Provider();
 
 router.get('/', async (req, res) => {
     const articles = await articleProvider.list();
@@ -35,11 +34,6 @@ router.post('/', async (req, res) => {
         req.body.type,
         req.body.metaData
     ));
-    try {
-        await processUpdateHooks(newArticle);
-    } catch (e) {
-        return res.status(500).json(e);
-    }
     return res.json(newArticle);
 });
 
@@ -48,35 +42,13 @@ router.put('/:id', async (req, res) => {
         req.params.id,
         new Article(req.body.title, req.body.body, '', new Date(), req.body.type, req.body.metaData)
     );
-    try {
-        await processUpdateHooks(updatedArticle);
-    } catch (e) {
-        return res.status(500).json(e);
-    }
     return res.json(updatedArticle);
 });
 
 router.delete('/:id', async (req, res) => {
     await articleProvider.delete(req.params.id);
-    try {
-        await processDeleteHooks(req.params.id);
-    } catch (e) {
-        return res.status(500).json(e);
-    }
     return res.json({
         message: 'Deleted article.',
         id: req.params.id,
     });
 });
-
-async function processUpdateHooks(article: Article) {
-    if (jalkapalloConfig.shouldExport) {
-        await articleExport.createOrUpdate(article);
-    }
-}
-
-async function processDeleteHooks(id: string) {
-    if (jalkapalloConfig.shouldExport) {
-        await articleExport.delete(id);
-    }
-}

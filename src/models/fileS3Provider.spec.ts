@@ -10,7 +10,7 @@ describe('FileS3Provider', () => {
     beforeEach(() => {
         S3Spy = jasmine.createSpyObj<S3>('S3', ['upload', 'deleteObject', 'listObjects', 'getObject']);
         fileS3Provider = new FileS3Provider(S3Spy);
-        jalkapalloConfig.s3Bucket = 'testBucket';
+        jalkapalloConfig.filesBucket = 'testBucket';
     });
 
     it('lists files from the bucket', async () => {
