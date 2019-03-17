@@ -3,10 +3,11 @@ import { Article } from "./article";
 import { S3 } from "aws-sdk/clients/all";
 import { jalkapalloConfig } from "../config";
 import { ArticleMarkdownMapper } from "./articleMarkdownMapper";
+import { TaggingHandler } from "./taggingHandler";
 
 export class ArticleS3Provider implements CrudInterface<Article> {
 
-    constructor(private s3: S3, private mapper: ArticleMarkdownMapper) { }
+    constructor(private s3: S3, private mapper: ArticleMarkdownMapper, private taggingHandler: TaggingHandler) { }
 
     async list(): Promise<Article[]> {
         const result = await this.s3.listObjects({
@@ -16,12 +17,17 @@ export class ArticleS3Provider implements CrudInterface<Article> {
         if (!result.Contents) {
             return [];
         }
-        return result.Contents.map(object => this.mapS3ObjectToArticle(object));
+        return Promise.all(result.Contents.map(async object => await this.mapS3ObjectToArticle(object)));
     }    
 
-    private mapS3ObjectToArticle(object: S3.Object): Article {
+    private async mapS3ObjectToArticle(object: S3.Object): Promise<Article> {
+        const taggingResult = await this.s3.getObjectTagging({
+            Bucket: jalkapalloConfig.articlesBucket,
+            Key: object.Key ? object.Key : '',
+        }).promise();
+        const title = this.taggingHandler.findValueForTag('title', taggingResult.TagSet);
         const id = object.Key ? this.idFromKey(object.Key) : '';
-        return new Article(id, '', id, object.LastModified, 'article');
+        return new Article(title, '', id, object.LastModified, 'article');
     }
 
     async get(id: string): Promise<Article> {
@@ -63,6 +69,7 @@ export class ArticleS3Provider implements CrudInterface<Article> {
             Key: this.keyFromId(id),
             Body: this.mapper.toMarkdown(dataObject),
             ContentType: 'text/plain',
+            Tagging: 'title=' + dataObject.getTitle(),
             ACL: 'public-read',
         }).promise();
     }

@@ -2,15 +2,30 @@ import { FileS3Provider } from "./fileS3Provider";
 import { S3 } from "aws-sdk/clients/all";
 import { jalkapalloConfig } from "../config";
 import { S3File } from "./s3file";
+import { TaggingHandler } from "./taggingHandler";
 
 describe('FileS3Provider', () => {
     let fileS3Provider: FileS3Provider;
     let S3Spy: S3;
+    let taggingHandlerSpy: TaggingHandler;
 
     beforeEach(() => {
         S3Spy = jasmine.createSpyObj<S3>('S3', ['upload', 'deleteObject', 'listObjects', 'getObject']);
-        fileS3Provider = new FileS3Provider(S3Spy);
+        taggingHandlerSpy = jasmine.createSpyObj<TaggingHandler>('TaggingHandler', ['findValueForTag']);
+        const mockTaggingResult = {
+            TagSet: [
+                { Key: 'title', Value: 'testTitle' },
+                { Key: 'url', Value: 'testUrl' }
+            ]
+        };
+        S3Spy.getObjectTagging = jasmine.createSpy('getObjectTagging').and.returnValue({ promise: () => mockTaggingResult });
+        taggingHandlerSpy.findValueForTag = jasmine.createSpy('findValueForTag')
+            .withArgs('url', mockTaggingResult.TagSet).and.returnValue('testUrl')
+            .withArgs('title', mockTaggingResult.TagSet).and.returnValue('testTitle');
+
         jalkapalloConfig.filesBucket = 'testBucket';
+
+        fileS3Provider = new FileS3Provider(S3Spy, taggingHandlerSpy);
     });
 
     it('lists files from the bucket', async () => {
@@ -19,14 +34,7 @@ describe('FileS3Provider', () => {
                 Key: 'testKey',
             }],
         };
-        const mockTaggingResult = {
-            TagSet: [
-                { Key: 'title', Value: 'testTitle' },
-                { Key: 'url', Value: 'testUrl' }
-            ]
-        };
         S3Spy.listObjects = jasmine.createSpy('listObjects').and.returnValue({ promise: () => mockReturnValue });
-        S3Spy.getObjectTagging = jasmine.createSpy('getObjectTagging').and.returnValue({ promise: () => mockTaggingResult });
 
         const result = await fileS3Provider.list();
         
@@ -36,14 +44,6 @@ describe('FileS3Provider', () => {
     });
 
     it('gets a single file by id', async () => {
-        const mockTaggingResult = {
-            TagSet: [
-                { Key: 'title', Value: 'testTitle' },
-                { Key: 'url', Value: 'testUrl' }
-            ]
-        };
-        S3Spy.getObjectTagging = jasmine.createSpy('getObjectTagging').and.returnValue({ promise: () => mockTaggingResult });
-
         const result = await fileS3Provider.get('testKey');
         
         expect(result.getId()).toEqual('testKey');
@@ -63,20 +63,13 @@ describe('FileS3Provider', () => {
     });
 
     it('updates an object if the provided content is empty', async () => {
-        const testFile = new S3File('testTitle', 'noUrl', 'testId');
-        const mockTaggingResult = {
-            TagSet: [
-                { Key: 'title', Value: 'noTitle' },
-                { Key: 'url', Value: 'testUrl' }
-            ]
-        };
-        S3Spy.getObjectTagging = jasmine.createSpy('getObjectTagging').and.returnValue({ promise: () => mockTaggingResult });
+        const testFile = new S3File('actualTitle', 'noUrl', 'testId');
         S3Spy.putObjectTagging = jasmine.createSpy('putObjectTagging').and.returnValue( { promise: () => {} });
 
         const result = await fileS3Provider.update('testId', testFile);
 
         expect(result.getUrl()).toEqual('testUrl');
-        expect(result.getTitle()).toEqual('testTitle');
+        expect(result.getTitle()).toEqual('actualTitle');
         expect(S3Spy.getObjectTagging).toHaveBeenCalled();
         expect(S3Spy.putObjectTagging).toHaveBeenCalled();
     });

@@ -3,6 +3,7 @@ import { S3 } from "aws-sdk/clients/all";
 import { S3File } from "./s3file";
 import { CrudInterface } from "./crudInterface";
 import { jalkapalloConfig } from "../config";
+import { TaggingHandler } from './taggingHandler';
 
 export class FileS3Provider implements CrudInterface<S3File> {
     private contentTypeMapping: any = {
@@ -17,7 +18,7 @@ export class FileS3Provider implements CrudInterface<S3File> {
         '.svg': 'image/svg+xml',
     };
 
-    constructor(private s3: S3) { }
+    constructor(private s3: S3, private taggingHandler: TaggingHandler) { }
 
     async list(): Promise<S3File[]> {
         const result = await this.s3.listObjects({
@@ -38,15 +39,10 @@ export class FileS3Provider implements CrudInterface<S3File> {
             Key: object.Key,
         }).promise();
         return new S3File(
-            this.findValueForTag('title', taggingResult.TagSet),
-            this.findValueForTag('url', taggingResult.TagSet),
+            this.taggingHandler.findValueForTag('title', taggingResult.TagSet),
+            this.taggingHandler.findValueForTag('url', taggingResult.TagSet),
             object.Key
         );
-    }
-
-    private findValueForTag(tagKey: string, tagSet: S3.Tag[]): string {
-        const foundTag = tagSet.find(tag => (tag.Key === tagKey));
-        return foundTag !== undefined ? foundTag.Value : '';
     }
 
     async get(id: string): Promise<S3File> {
@@ -58,8 +54,8 @@ export class FileS3Provider implements CrudInterface<S3File> {
             throw new Error('Failed to get file with id: ' + id);
         }
         return new S3File(
-            this.findValueForTag('title', result.TagSet),
-            this.findValueForTag('url', result.TagSet),
+            this.taggingHandler.findValueForTag('title', result.TagSet),
+            this.taggingHandler.findValueForTag('url', result.TagSet),
             id
         );
     }

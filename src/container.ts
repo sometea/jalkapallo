@@ -9,6 +9,7 @@ import { ArticleExport } from './models/articleExport';
 import { ArticleS3Provider } from './models/articleS3Provider';
 import { ArticleMarkdownMapper } from './models/articleMarkdownMapper';
 import { FileS3Provider } from './models/fileS3Provider';
+import { TaggingHandler } from './models/taggingHandler';
 
 export const container = {
     _s3: new S3(awsConfig),
@@ -18,9 +19,10 @@ export const container = {
     DocumentClient: () => container._documentClient,
     DynamoDB: () => container._dynamodDb,
     ArticleProvider: () => new ArticleProvider(container.DocumentClient()),
-    ArticleS3Provider: () => new ArticleS3Provider(container.S3(), container.ArticleMarkdownMapper()),
-    FileS3Provider: () => new FileS3Provider(container.S3()),
+    ArticleS3Provider: () => new ArticleS3Provider(container.S3(), container.ArticleMarkdownMapper(), container.TaggingHandler()),
+    FileS3Provider: () => new FileS3Provider(container.S3(), container.TaggingHandler()),
     ArticleMarkdownMapper: () => new ArticleMarkdownMapper(),
+    TaggingHandler: () => new TaggingHandler(),
     ArticleExport: () => new ArticleExport(container.S3()),
     CognitoIdentityServiceProvider: () => new CognitoIdentityServiceProvider(awsConfig),
     CognitoExpress: () => new CognitoExpress({

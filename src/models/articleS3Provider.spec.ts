@@ -3,17 +3,31 @@ import { ArticleS3Provider } from "./articleS3Provider";
 import { Article } from "./article";
 import { jalkapalloConfig } from "../config";
 import { ArticleMarkdownMapper } from "./articleMarkdownMapper";
+import { TaggingHandler } from "./taggingHandler";
 
 describe('ArticleS3Provider', () => {
     let articleProvider: ArticleS3Provider;
     let S3Spy: S3;
     let mapperSpy: ArticleMarkdownMapper;
+    let taggingHandlerSpy: TaggingHandler;
     const testDate = new Date('12.12.1980');
 
     beforeEach(() => {
         S3Spy = jasmine.createSpyObj<S3>('S3', ['upload', 'deleteObject', 'listObjects', 'getObject']);
         mapperSpy = jasmine.createSpyObj<ArticleMarkdownMapper>('ArticleMarkdownMapper', ['toArticle', 'toMarkdown']);
-        articleProvider = new ArticleS3Provider(S3Spy, mapperSpy);
+        taggingHandlerSpy = jasmine.createSpyObj<TaggingHandler>('TaggingHandler', ['findValueForTag']);
+        const mockTaggingResult = {
+            TagSet: [
+                { Key: 'title', Value: 'testTitle' },
+            ]
+        };
+        S3Spy.getObjectTagging = jasmine.createSpy('getObjectTagging').and.returnValue({ promise: () => mockTaggingResult });
+        taggingHandlerSpy.findValueForTag = jasmine.createSpy('findValueForTag')
+            .withArgs('url', mockTaggingResult.TagSet).and.returnValue('testUrl')
+            .withArgs('title', mockTaggingResult.TagSet).and.returnValue('testTitle');
+
+        articleProvider = new ArticleS3Provider(S3Spy, mapperSpy, taggingHandlerSpy);
+
         jalkapalloConfig.articlesBucket = 'testBucket';
         jalkapalloConfig.articlesDirectory = 'testDirectory';
     });
@@ -29,7 +43,7 @@ describe('ArticleS3Provider', () => {
 
         const result = await articleProvider.list();
 
-        expect(result).toEqual([ new Article('testKey', '', 'testKey', testDate, 'article') ]);
+        expect(result).toEqual([ new Article('testTitle', '', 'testKey', testDate, 'article') ]);
     });
 
     it('retrieves single articles', async () => {
@@ -81,6 +95,7 @@ describe('ArticleS3Provider', () => {
             Body: 'testMarkdown',
             ContentType: 'text/plain',
             ACL: 'public-read',
+            Tagging: 'title=testTitle',
         });
     });
 });
